@@ -1,8 +1,4 @@
 --\\ Service's //--
-local A = Instance.new("Sound")
-A.Parent = game.CoreGui
-A.SoundId = "rbxassetid://6233781579"
-A:Play()
 
 local LP 			= game.Players.LocalPlayer
 
