@@ -41,7 +41,7 @@ Tab:AddSlider({
 Tab:AddDropdown({
 	Name 		= "Auto_Train_Machine",
 	Default 	= "HangingSitupBar",
-	Options 	= {"HangingSitupBar", "100lb Deadlift", "PullUpBar", "50lb Benchpress", "100lb Benchpress", "400lb Benchpress", "300lb Deadlift", },
+	Options 	= {"HangingSitupBar", "PullUpBar", "100lb Deadlift", "300lb Deadlift", "50lb Benchpress", "100lb Benchpress", "400lb Benchpress", "Treadmill"},
 
 	Flag		= "Auto_Farm_Machine_Selected",
 })
@@ -120,7 +120,7 @@ function round(p12, p13)
 	if not p13 then
 		return math.floor(p12 + 0.5)
 	end
-	
+
 	return math.floor(p12 * 10 ^ p13 + 0.5) / 10 ^ p13
 end
 
@@ -137,7 +137,7 @@ local Concentration 	= Tab3:AddLabel("Concentration: ")
 
 game.ReplicatedStorage:WaitForChild("Events").UpdateClientData.OnClientEvent:Connect(function(PDATA)
 	DATA = PDATA
-		
+
 	Strength:		Set("Strength: ".. 		round(DATA.Strength, 4))
 	Agility:		Set("Agility: ".. 		round(DATA.Agility, 4))
 	Endurance:		Set("Endurance: "..		round(DATA.Endurance, 4))
@@ -190,13 +190,13 @@ local function Start_Money_Farm()
 			fireproximityprompt(game.Workspace.bin.JobStarts[OrionLib.Flags["Job_Selected"].Value].StartJob, 8)
 			wait(1)
 		end
-		
+
 		local v = GetClosest()
-			
+
 		Tween(LP.Character.HumanoidRootPart, v.Value.Position, OrionLib.Flags["Auto_Farm_Speed"].Value)
-		
+
 		repeat wait(4) fireproximityprompt(v.Value.Deliver, 8) until v.Value.Deliver.Enabled == false		
-			
+
 		Start_Money_Farm1 = false	
 	end
 end
@@ -219,9 +219,13 @@ local function Start_Machine_Training()
 							CONNECTION = v.Base.ChildAdded:Connect(function(TIMER)
 								if TIMER.Name == "Timer" then
 									repeat wait() until TIMER:FindFirstChild("TimerPrompt").Enabled == true
-
+									
+									if v.Name == "Treadmill" then
+										v.TreadController.Button:FireServer(TIMER.TimerPrompt.KeyboardKeyCode)
+									else
+										v.PullUpController.Button:FireServer(TIMER.TimerPrompt.KeyboardKeyCode)
+									end
 									fireproximityprompt(TIMER:WaitForChild("TimerPrompt"), 1)
-									v.PullUpController.Button:FireServer(TIMER.TimerPrompt.KeyboardKeyCode)
 								end
 							end)
 
@@ -329,9 +333,9 @@ local Sleep1 = false
 local function Sleep()
 	if Sleep1 == false and DATA.BodyPerformance <= OrionLib.Flags["When_Sleep"].Value and (Start_Money_Farm1 == false and Start_Auto_Training1 == false and Start_Machine_Training1 == false) and LP.CharacterValues.Ragdoll.Value == false and not LP.CharacterValues.Jobs:FindFirstChildOfClass("Folder") then
 		Sleep1 = true
-		
+
 		local Last_Position = LP.Character.HumanoidRootPart.Position
-		
+
 		local function GetClosest()
 			local TargetDistance = math.huge
 			local Target
@@ -349,24 +353,24 @@ local function Sleep()
 
 			return Target
 		end
-		
+
 		wait(0.5)
-		
+
 		Tween(LP.Character.HumanoidRootPart, GetClosest().Position, 50)
-		
+
 		wait(1)
-		
+
 		LP.Character.Humanoid:UnequipTools()
 		fireproximityprompt(GetClosest().BedPrompt, 1)
-		
+
 		repeat wait() until DATA.BodyPerformance >= 100
-		
+
 		wait(1)
-		
+
 		Tween(LP.Character.HumanoidRootPart, Last_Position, 50)
-		
+
 		wait(1)
-		
+
 		Sleep1 = false
 	end
 end
@@ -402,7 +406,7 @@ coroutine.wrap(function()
 				Start_Eating()
 			end
 		end)()
-		
+
 		coroutine.wrap(function()
 			if OrionLib.Flags["Sleep"].Value == true then
 				Sleep()
