@@ -94,6 +94,16 @@ Tab2:AddSlider({
 	Flag		= "When_Sleep",
 })
 
+Tab2:AddSlider({
+	Name 		= "Wakeup when",
+	Min 		= 1,
+	Max 		= 90,
+	Default 	= 70,
+	Color 		= Color3.fromRGB(255, 134, 229),
+	Increment 	= 1,
+	Flag		= "When_Wake",
+})
+
 Tab2:AddTextbox({
 	Name 			= "Whitelist user",
 	Default 		= "Input roblox user name to whitelist them",
@@ -363,8 +373,10 @@ local function Sleep()
 		LP.Character.Humanoid:UnequipTools()
 		fireproximityprompt(GetClosest().BedPrompt, 1)
 
-		repeat wait() until DATA.BodyPerformance >= 100
-
+		repeat wait() until DATA.BodyPerformance >= OrionLib.Flags["When_Wake"].Value
+		
+		LP.Character.Humanoid.Jump = true
+		
 		wait(1)
 
 		Tween(LP.Character.HumanoidRootPart, Last_Position, 50)
