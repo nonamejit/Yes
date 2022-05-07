@@ -97,7 +97,7 @@ Tab2:AddSlider({
 Tab2:AddSlider({
 	Name 		= "Wakeup when",
 	Min 		= 1,
-	Max 		= 90,
+	Max 		= 100,
 	Default 	= 70,
 	Color 		= Color3.fromRGB(255, 134, 229),
 	Increment 	= 1,
