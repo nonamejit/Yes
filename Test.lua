@@ -270,6 +270,7 @@ local function Start_Eating()
 					LP.Character.Humanoid:EquipTool(v.Parent.Parent)
 					LP.Character:FindFirstChildOfClass("Tool"):Activate()
 					repeat wait() until DATA.Hunger > 20
+					LP.Character.Humanoid:UnequipTools()
 					break
 				end
 			end
