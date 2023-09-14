@@ -23,13 +23,13 @@ local function Eat()
 				if Player and Player.Character and Player.Character:FindFirstChildOfClass("Humanoid") then
 					local Humanoid	= Player.Character.Humanoid
 					Humanoid:EquipTool(v.Parent)
-					
+
 					if v.Parent.Parent == Player.Character then
 						v.Parent:Activate()
 					end
-					
+
 					task.wait(2)
-					
+
 					if Player.Character:FindFirstChildOfClass("Tool") then
 						Humanoid:UnequipTools()
 					end
@@ -43,7 +43,7 @@ local function GetClosestPurchase(Purchase, Distance)
 	local ClosestPurDistance 	= Distance
 	local ClosestPur			= nil
 	local Character				= Player.Character
-	
+
 	for i,v in pairs(game.Workspace.Purchases:GetDescendants()) do
 		if v.Name == Purchase then
 			if v:FindFirstChild("ClickDetector") and v:FindFirstChild("Part") then
@@ -55,7 +55,7 @@ local function GetClosestPurchase(Purchase, Distance)
 			end
 		end
 	end
-	
+
 	return ClosestPur
 end
 
@@ -90,7 +90,7 @@ local function GetClosestTreadmil(Distance)
 			end
 		end
 	end
-	
+
 	return closestPurchase
 end
 
@@ -136,7 +136,7 @@ local function Punch()
 	if CanPunch == false and Player.Character and Player.Character:FindFirstChild("Combat") then
 		CanPunch = true
 		Player.Character["Combat"]:Activate()
-		
+
 		local Animation
 		for i,v in pairs(ReplicatedFirst:WaitForChild("Anims"):WaitForChild(Player.Character["Combat"]:GetAttribute("Name")):GetChildren()) do
 			if (v.Name == "1" or v.Name == "2" and v.Name == "3" or v.Name == "4" or v.Name == "5") and v:IsA("Animation") then
@@ -145,7 +145,7 @@ local function Punch()
 				end
 			end
 		end
-		
+
 		if Animation ~= nil then
 			repeat task.wait() until Animation.IsPlaying == false or Values["PunchingBagsEnabled"] == false or Values["DuraEnabled"] == false or Values["ToolEnabled"] == false or Values["ThreadmilEnabled"] == false
 		end
@@ -156,11 +156,11 @@ end
 local function RunPunchingBags()
 	local Character			= Player.Character
 	local Humanoid			= Character.Humanoid
-	
+
 	if Values["PunchingBagsEnabled"] == true then
 		local Purchase		= GetClosestPurchase("Strike "..Values["PunchingBagsType"].." Training", 20)
 		local Bag			= GetClosestBag(20)
-				
+
 		if not Character:FindFirstChild("Gloves") then
 			if not Player.Backpack:FindFirstChild("Strike "..Values["PunchingBagsType"].." Training") then
 				if Purchase ~= nil then
@@ -170,22 +170,22 @@ local function RunPunchingBags()
 					if Values["Debug"] == true then
 						UILibrary:Notification("Failed", "Make sure you are close to the purchase button")
 					end
-					
+
 					repeat task.wait() until GetClosestPurchase("Strike "..Values["PunchingBagsType"].." Training", 20) ~= nil or Values["PunchingBagsEnabled"] == false
 					Purchase = GetClosestPurchase("Strike "..Values["PunchingBagsType"].." Training", 20)
 					fireclickdetector(Purchase.ClickDetector)
 				end 
 			end
-			
+
 			task.wait(1)
-			
+
 			if Bag ~= nil then
 				if Player.Backpack:FindFirstChild("Strike "..Values["PunchingBagsType"].." Training") then
 					Humanoid:EquipTool(Player.Backpack["Strike "..Values["PunchingBagsType"].." Training"])
-					
+
 					if Character:FindFirstChildOfClass("Tool") and Character:FindFirstChildOfClass("Tool").Name == "Strike "..Values["PunchingBagsType"].." Training" then
 						Character:FindFirstChildOfClass("Tool"):Activate()
-						
+
 						if Character:FindFirstChildOfClass("Tool") then
 							Humanoid:UnequipTools()
 						end
@@ -195,7 +195,7 @@ local function RunPunchingBags()
 				if Values["Debug"] == true then
 					UILibrary:Notification("Failed", "Make sure you are close to the punching bag", "Close")
 				end
-				
+
 				repeat task.wait() until GetClosestBag(20) ~= nil or Values["PunchingBagsEnabled"] == false
 				Bag = GetClosestBag(20)
 				if Player.Backpack:FindFirstChild("Strike "..Values["PunchingBagsType"].." Training") then
@@ -211,14 +211,14 @@ local function RunPunchingBags()
 				end
 			end
 		end
-		
+
 		repeat task.wait() until Character:FindFirstChild("Gloves") or Values["PunchingBagsEnabled"] == false
-		
+
 		if Character:FindFirstChild("Gloves") then
 			if Player.Backpack:FindFirstChild("Combat") then
 				Humanoid:EquipTool(Player.Backpack.Combat)
 			end
-			
+
 			if Character:FindFirstChild("Combat") then
 				if Values["PunchingBagsType"] == "Power" then
 					if PlayerGui:FindFirstChildOfClass("BillboardGui") then
@@ -226,7 +226,7 @@ local function RunPunchingBags()
 							Character:FindFirstChild("Combat"):Activate()
 						end
 					end
-					
+
 					local Hits = 0; local Connection = nil; Connection = PlayerGui.ChildAdded:Connect(function(Child) 
 						if Child:IsA("BillboardGui") and Child:FindFirstChild("ImageLabel") and Child.Adornee.Name == "Main" then
 							if Hits <= 4 then
@@ -236,7 +236,7 @@ local function RunPunchingBags()
 							end
 						end
 					end)
-					
+
 					repeat task.wait() until not Character:FindFirstChild("Gloves") or Values["PunchingBagsEnabled"] == false
 					Connection:Disconnect()
 				elseif Values["PunchingBagsType"] == "Speed" then
@@ -254,7 +254,7 @@ local function RunPunchingBags()
 						end
 					end
 				end
-				
+
 				if Character:FindFirstChildOfClass("Tool") then
 					Humanoid:UnequipTools()
 				end
@@ -284,10 +284,10 @@ end
 local function RunThreadmil()
 	local Character			= Player.Character
 	local Humanoid			= Character.Humanoid
-	
+
 	if Values["ThreadmilEnabled"] == true then
 		local closestThreadmil = GetClosestTreadmil(20)
-		
+
 		if closestThreadmil ~= nil then
 			fireclickdetector(closestThreadmil.ClickDetector)
 		else
@@ -298,10 +298,10 @@ local function RunThreadmil()
 			repeat task.wait() until GetClosestTreadmil(20) ~= nil or Values["ThreadmilEnabled"] == false	
 			fireclickdetector(closestThreadmil.ClickDetector)
 		end
-		
+
 		repeat task.wait() until PlayerGui.TreadmillGain.Frame.Visible == true or Values["ThreadmilEnabled"] == false
 		firesignal(PlayerGui.TreadmillGain.Frame[Values["ThreadmilType"]].MouseButton1Up)
-		
+
 		if PlayerGui.TreadmillGain.Frame2.Keys:FindFirstChildOfClass("Frame") then
 			if Enum.KeyCode[PlayerGui.TreadmillGain.Frame2.Keys:FindFirstChildOfClass("Frame").Name] then
 				VirtualManager:SendKeyEvent(true, Enum.KeyCode[PlayerGui.TreadmillGain.Frame2.Keys:FindFirstChildOfClass("Frame").Name], 	false, nil)
@@ -319,17 +319,17 @@ local function RunThreadmil()
 				end
 			end
 		end)
-		
+
 		repeat wait() until Player.Character.HumanoidRootPart.Anchored == false or Values["ThreadmilEnabled"] == false
 		Connection:Disconnect()
 		repeat wait() until PlayerGui.Main.HUD.Stamina.Clipping.Size.X.Scale >= 1 or Values["ThreadmilEnabled"] == false
-		
+
 		Eat()
 		if Values["ThreadmilEnabled"] == true then
 			local S, F = pcall(function()
 				RunThreadmil()
 			end)
-			
+
 			if F and Values["Debug"] == true then
 				UILibrary:Notification("Failed", tostring(F), "Close")
 			end
@@ -341,17 +341,17 @@ local function RunAutoTool()
 	if Values["ToolEnabled"] == true and PlayerGui.Main.HUD.Stamina.Clipping.Size.X.Scale > Values["StaminaValue"] then
 		local Character			= Player.Character
 		local Humanoid			= Character.Humanoid
-		
+
 		if Player.Backpack:FindFirstChild(Values["ToolType"]) then
 			Humanoid:EquipTool(Player.Backpack[Values["ToolType"]])
 		end
-		
+
 		if Character:FindFirstChild(Values["ToolType"]) then
 			repeat task.wait()
 				Character[Values["ToolType"]]:Activate()
 			until PlayerGui.Main.HUD.Stamina.Clipping.Size.X.Scale <= Values["StaminaValue"] or Values["ToolEnabled"] == false
 		end
-		
+
 		Eat()
 		repeat task.wait() until PlayerGui.Main.HUD.Stamina.Clipping.Size.X.Scale >= 1 or Values["ToolEnabled"] == false
 
@@ -375,17 +375,17 @@ local function RunDura()
 		local OtherPlayerHumanoid		= OtherPlayerCharacter.Humanoid
 		local Character					= Player.Character
 		local Humanoid					= Character.Humanoid
-		
+
 		if OtherPlayerCharacter and OtherPlayerHumanoid then
 			if DuraBoolValue == true then
 				if Humanoid.Health < Humanoid.MaxHealth then
 					repeat task.wait() until Humanoid.Health >= Humanoid.MaxHealth or Values["DuraEnabled"] == false
 				end
-				
+
 				repeat task.wait(0.2) until Raycast(Character.HumanoidRootPart.CFrame.p, Character.HumanoidRootPart.CFrame.LookVector * 10, {Character}) == true and (OtherPlayerCharacter:FindFirstChildOfClass("Tool") and OtherPlayerCharacter:FindFirstChildOfClass("Tool").Name == "Combat") or Values["DuraEnabled"] == false
-				
+
 				local closestPurchase	= GetClosestPurchase("Body Conditioning", 20)
-				
+
 				if closestPurchase ~= nil then
 					fireclickdetector(closestPurchase.ClickDetector)
 				else
@@ -396,25 +396,25 @@ local function RunDura()
 					repeat task.wait() until GetClosestPurchase("Body Conditioning", 20) ~= nil or Values["DuraEnabled"] == false	
 					fireclickdetector(closestPurchase.ClickDetector)
 				end
-				
+
 				if Player.Backpack:FindFirstChild("Body Conditioning") then
-					Humanoid:EquipTools(Player.Backpack["Body Conditioning"])
+					Humanoid:EquipTool(Player.Backpack["Body Conditioning"])
 				end
-				
+
 				if Character:FindFirstChild("Body Conditioning") and Values["DuraEnabled"] then
 					if returnAnimation(Player, "13470691661") == false then
 						Character:FindFirstChild("Body Conditioning"):Activate()
 					end
 				end
-				
+
 				repeat task.wait() until not Character:FindFirstChild("Body Conditioning") or Values["DuraEnabled"] == false or not OtherPlayer.Character:FindFirstChild("Combat")
 
 				if Character:FindFirstChild("Body Conditioning") and returnAnimation(Player, "13470691661") == true then
 					Character:FindFirstChild("Body Conditioning"):Activate()
 				end
-				
+
 				Eat()
-				
+
 				if Values["DuraEnabled"] == true then
 					local S, F = pcall(function()
 						DuraBoolValue = false
@@ -436,7 +436,7 @@ local function RunDura()
 
 				if Player.Character:FindFirstChild("Combat") then
 					local StartingHealth = OtherPlayerHumanoid.Health
-					
+
 					if Values["DuraEnabled"] == true then
 						local C = nil; C = OtherPlayerHumanoid.HealthChanged:Connect(function(H) 
 							StartingHealth = StartingHealth - OtherPlayerHumanoid.Health
@@ -452,15 +452,15 @@ local function RunDura()
 							Punch()
 						end
 					until not OtherPlayer.Character:FindFirstChild("Body Conditioning") or (OtherPlayer.Character.Humanoid.Health - StartingHealth) <= StartingHealth or Values["DuraEnabled"] == false
-					
+
 					task.wait(4)
-					
+
 					if Character:FindFirstChildOfClass("Tool") then
 						Humanoid:UnequipTools()
 					end
-					
+
 					Eat()
-					
+
 					if Values["DuraEnabled"] == true then
 						local S, F = pcall(function()
 							DuraBoolValue = true
@@ -587,7 +587,7 @@ end)
 MiscChan:Seperator()
 
 MiscChan:Toggle("Disable on hit", false, function(value) 
-	
+
 end)
 
 MiscChan:Seperator()
