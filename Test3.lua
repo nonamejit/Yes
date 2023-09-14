@@ -14,6 +14,8 @@ local MainSer			= MainWin:Server("Asura", "")
 
 local Values			= {}
 
+--Fuctions //
+
 local function Eat()
 	if PlayerGui.Main.HUD.Hunger.Clipping.Size.X.Scale <= Values["HungerValue"] and Values["HungerEnabled"] == true then
 		for i,v in pairs(Player.Backpack:GetDescendants()) do
@@ -370,7 +372,7 @@ local function RunDura()
 	if Values["DuraEnabled"] == true then
 		local OtherPlayer				= Players[Values["DuraSelected"]]
 		local OtherPlayerCharacter 	= OtherPlayer.Character
-		local OtherPlayerHumanoid		= OtherPlayerCharacter:WaitForChildOfClass("Humanoid")
+		local OtherPlayerHumanoid		= OtherPlayerCharacter.Humanoid
 		local Character					= Player.Character
 		local Humanoid					= Character.Humanoid
 		
