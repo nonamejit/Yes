@@ -2348,6 +2348,8 @@ function DiscordLib:Window(text)
 				CurrentValueFrame.Parent = SliderFrame
 				CurrentValueFrame.BackgroundColor3 = Color3.fromRGB(114, 137, 218)
 				CurrentValueFrame.Size = UDim2.new((start or 0) / max, 0, 0, 8)
+				
+				pcall(callback, start)
 
 				CurrentValueFrameCorner.Name = "CurrentValueFrameCorner"
 				CurrentValueFrameCorner.Parent = CurrentValueFrame
