@@ -1,10 +1,11 @@
 local Players			= game:GetService("Players")
 local Replicated		= game:GetService("ReplicatedStorage")
-local VirtualManager	= game:GetService("VirtualInputManager")
+local ReplicatedFirst		= game:GetService("ReplicatedFirst")
+local VirtualManager		= game:GetService("VirtualInputManager")
 
 local Player			= Players.LocalPlayer
 local PlayerGui			= Player.PlayerGui
-local Event				= Replicated.Events.EventCore
+local Event			= Replicated.Events.EventCore
 
 local UILibrary 		= loadstring(game:HttpGet(("https://raw.githubusercontent.com/ErrorRat/Yes/main/Test2.lua")))()
 local MainWin			= UILibrary:Window("Asura's Demise 😈")
@@ -43,8 +44,8 @@ local function GetClosestPurchase(Purchase, Distance)
 	
 	for i,v in pairs(game.Workspace.Purchases:GetDescendants()) do
 		if v.Name == Purchase then
-			if v:FindFirstChild("ClickDetector") and v:FindFirstChildOfClass("BasePart") then
-				local Part				= v:FindFirstChildOfClass("BasePart")
+			if v:FindFirstChild("ClickDetector") and v:FindFirstChild("Part") then
+				local Part				= v:FindFirstChildOfClass("Part")
 				if (Character.HumanoidRootPart.Position - Part.Position).Magnitude < ClosestPurDistance then
 					ClosestPurDistance 	= (Character.HumanoidRootPart.Position - v.Part.Position).Magnitude
 					ClosestPur			= v
@@ -79,9 +80,9 @@ local function GetClosestTreadmil(Distance)
 	local closestPurchase		= nil
 	for i,v in pairs(game.Workspace.Treadmills:GetChildren()) do
 		if v.Name == "Treadmill" then
-			if v:FindFirstChild("ClickDetector") and v:FindFirstChild("Part") then
-				if (Player.Character.HumanoidRootPart.Position - v.Part.Position).Magnitude < closestPurchaseDis then
-					closestPurchaseDis 	= (Player.Character.HumanoidRootPart.Position - v.Part.Position).Magnitude
+			if v:FindFirstChild("ClickDetector") and v:FindFirstChild("Center") then
+				if (Player.Character.HumanoidRootPart.Position - v.Center.Position).Magnitude < closestPurchaseDis then
+					closestPurchaseDis 	= (Player.Character.HumanoidRootPart.Position - v.Center.Position).Magnitude
 					closestPurchase		= v
 				end
 			end
@@ -135,15 +136,17 @@ local function Punch()
 		Player.Character["Combat"]:Activate()
 		
 		local Animation
-		for i,v in pairs(Replicated:WaitForChild("Anims"):GetDescendants()) do
+		for i,v in pairs(ReplicatedFirst:WaitForChild("Anims"):WaitForChild(Player.Character["Combat"]:GetAttribute("Name")):GetChildren()) do
 			if (v.Name == "1" or v.Name == "2" and v.Name == "3" or v.Name == "4" or v.Name == "5") and v:IsA("Animation") then
-				if returnAnimation(Player, v.AnimationId) ~= nil then
+				if returnAnimation(Player, v.AnimationId) ~= nil  then
 					Animation = returnAnimation(Player, v.AnimationId)
 				end
 			end
 		end
 		
-		repeat task.wait() until Animation.Ended == true
+		if Animation ~= nil then
+			repeat task.wait() until Animation.IsPlaying == false or Values["PunchingBagsEnabled"] == false or Values["DuraEnabled"] == false or Values["ToolEnabled"] == false or Values["ThreadmilEnabled"] == false
+		end
 		CanPunch = false
 	end
 end
@@ -155,7 +158,7 @@ local function RunPunchingBags()
 	if Values["PunchingBagsEnabled"] == true then
 		local Purchase		= GetClosestPurchase("Strike "..Values["PunchingBagsType"].." Training", 20)
 		local Bag			= GetClosestBag(20)
-		
+				
 		if not Character:FindFirstChild("Gloves") then
 			if not Player.Backpack:FindFirstChild("Strike "..Values["PunchingBagsType"].." Training") then
 				if Purchase ~= nil then
@@ -172,6 +175,8 @@ local function RunPunchingBags()
 				end 
 			end
 			
+			task.wait(1)
+			
 			if Bag ~= nil then
 				if Player.Backpack:FindFirstChild("Strike "..Values["PunchingBagsType"].." Training") then
 					Humanoid:EquipTool(Player.Backpack["Strike "..Values["PunchingBagsType"].." Training"])
@@ -186,7 +191,7 @@ local function RunPunchingBags()
 				end
 			else
 				if Values["Debug"] == true then
-					UILibrary:Notification("Failed", "Make sure you are close to the punching bag")
+					UILibrary:Notification("Failed", "Make sure you are close to the punching bag", "Close")
 				end
 				
 				repeat task.wait() until GetClosestBag(20) ~= nil or Values["PunchingBagsEnabled"] == false
@@ -205,8 +210,10 @@ local function RunPunchingBags()
 			end
 		end
 		
+		repeat task.wait() until Character:FindFirstChild("Gloves") or Values["PunchingBagsEnabled"] == false
+		
 		if Character:FindFirstChild("Gloves") then
-			if Player.Backpack:FindFirstChildOfClass("Combat") then
+			if Player.Backpack:FindFirstChild("Combat") then
 				Humanoid:EquipTool(Player.Backpack.Combat)
 			end
 			
@@ -229,6 +236,7 @@ local function RunPunchingBags()
 					end)
 					
 					repeat task.wait() until not Character:FindFirstChild("Gloves") or Values["PunchingBagsEnabled"] == false
+					Connection:Disconnect()
 				elseif Values["PunchingBagsType"] == "Speed" then
 					if PlayerGui:FindFirstChildOfClass("BillboardGui") then
 						if PlayerGui:FindFirstChildOfClass("BillboardGui").Adornee.Name == "Main" then
@@ -267,10 +275,14 @@ local function RunPunchingBags()
 	end
 end
 
+if PlayerGui.TreadmillGain.Frame2.Keys:FindFirstChildOfClass("Frame") then
+	PlayerGui.TreadmillGain.Frame2.Keys:FindFirstChildOfClass("Frame"):Destroy()
+end
+
 local function RunThreadmil()
 	local Character			= Player.Character
 	local Humanoid			= Character.Humanoid
-
+	
 	if Values["ThreadmilEnabled"] == true then
 		local closestThreadmil = GetClosestTreadmil(20)
 		
@@ -278,7 +290,7 @@ local function RunThreadmil()
 			fireclickdetector(closestThreadmil.ClickDetector)
 		else
 			if Values["Debug"] == true then
-				UILibrary:Notification("Failed", "Make sure you are close to the threadmil")
+				UILibrary:Notification("Failed", "Make sure you are close to the threadmil", "Close")
 			end
 
 			repeat task.wait() until GetClosestTreadmil(20) ~= nil or Values["ThreadmilEnabled"] == false	
@@ -317,7 +329,7 @@ local function RunThreadmil()
 			end)
 			
 			if F and Values["Debug"] == true then
-				UILibrary:Notification("Failed", tostring(F))
+				UILibrary:Notification("Failed", tostring(F), "Close")
 			end
 		end
 	end
@@ -328,7 +340,7 @@ local function RunAutoTool()
 		local Character			= Player.Character
 		local Humanoid			= Character.Humanoid
 		
-		if Player.Backpack:FindFirstChild(Values["ToolType"]) then	
+		if Player.Backpack:FindFirstChild(Values["ToolType"]) then
 			Humanoid:EquipTool(Player.Backpack[Values["ToolType"]])
 		end
 		
@@ -347,7 +359,7 @@ local function RunAutoTool()
 			end)
 
 			if F and Values["Debug"] == true then
-				UILibrary:Notification("Failed", tostring(F))
+				UILibrary:Notification("Failed", tostring(F), "Close")
 			end
 		end
 	end
@@ -376,7 +388,7 @@ local function RunDura()
 					fireclickdetector(closestPurchase.ClickDetector)
 				else
 					if Values["Debug"] == true then
-						UILibrary:Notification("Failed", "Make sure you are close to the purchase button")
+						UILibrary:Notification("Failed", "Make sure you are close to the purchase button", "Close")
 					end
 
 					repeat task.wait() until GetClosestPurchase("Body Conditioning", 20) ~= nil or Values["DuraEnabled"] == false	
@@ -454,7 +466,7 @@ local function RunDura()
 						end)
 
 						if F and Values["Debug"] == true then
-							UILibrary:Notification("Failed", tostring(F))
+							UILibrary:Notification("Failed", tostring(F), "Close")
 						end
 					end
 				end
@@ -472,7 +484,7 @@ AutofarmChan:Toggle("Strike Power/Speed Training", false, function(value)
 		end)
 
 		if F and Values["Debug"] == true then
-			UILibrary:Notification("Failed", tostring(F))
+			UILibrary:Notification("Failed", tostring(F), "Close")
 		end
 	end
 end)
@@ -491,7 +503,7 @@ AutofarmChan:Toggle("Treadmil Training", false, function(value)
 		end)
 
 		if F and Values["Debug"] == true then
-			UILibrary:Notification("Failed", tostring(F))
+			UILibrary:Notification("Failed", tostring(F), "Close")
 		end
 	end
 end)
@@ -504,14 +516,14 @@ AutofarmChan:Seperator()
 
 AutofarmChan:Toggle("Tool Training", false, function(value) 
 	Values["ToolEnabled"] = value
-	
+
 	if value == true then
 		local S, F = pcall(function()
 			RunAutoTool()
 		end)
 
 		if F and Values["Debug"] == true then
-			UILibrary:Notification("Failed", tostring(F))
+			UILibrary:Notification("Failed", tostring(F), "Close")
 		end
 	end
 end)
@@ -524,7 +536,7 @@ AutofarmChan:Seperator()
 
 AutofarmChan:Toggle("Dura Training", false, function(value) 
 	Values["DuraEnabled"] = value
-	
+
 	if value == true then
 		local S, F = pcall(function()
 			if Values["DuraStarting"] == false then
@@ -536,7 +548,7 @@ AutofarmChan:Toggle("Dura Training", false, function(value)
 		end)
 
 		if F and Values["Debug"] == true then
-			UILibrary:Notification("Failed", tostring(F))
+			UILibrary:Notification("Failed", tostring(F), "Close")
 		end
 	end
 end)
@@ -548,9 +560,10 @@ end)
 Players.PlayerAdded		:Connect(function(OtherPlayer) DuraDropDown:Add(OtherPlayer.Name) 	end)
 Players.PlayerRemoving	:Connect(function(OtherPlayer) DuraDropDown:Remove(OtherPlayer.Name) end)
 
-AutofarmChan:Label("Whoever is doing the hitting set it to false! It going to be true for the other person!")
+AutofarmChan:Label("Whoever is doing the hitting set it to false!")
+AutofarmChan:Label("It going to be true for the other person!")
 AutofarmChan:Toggle("Starting dura hit", false, function(value) 
-	Values["DuraStarting"] = value
+	Values["DuraStarting"] 	= value
 	DuraBoolValue			= value
 end)
 
