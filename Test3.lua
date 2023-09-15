@@ -158,21 +158,21 @@ local function RunPunchingBags()
 	local Humanoid			= Character.Humanoid
 
 	if Values["PunchingBagsEnabled"] == true then
-		local Purchase		= GetClosestPurchase("Strike "..Values["PunchingBagsType"].." Training", 20)
-		local Bag			= GetClosestBag(20)
+		local Purchase		= GetClosestPurchase("Strike "..Values["PunchingBagsType"].." Training", 25)
+		local Bag			= GetClosestBag(15)
 
 		if not Character:FindFirstChild("Gloves") then
 			if not Player.Backpack:FindFirstChild("Strike "..Values["PunchingBagsType"].." Training") then
 				if Purchase ~= nil then
-					local Purchase		= GetClosestPurchase("Strike "..Values["PunchingBagsType"].." Training", 20)
+					local Purchase		= GetClosestPurchase("Strike "..Values["PunchingBagsType"].." Training", 25)
 					fireclickdetector(Purchase.ClickDetector)
 				else 
 					if Values["Debug"] == true then
 						UILibrary:Notification("Failed", "Make sure you are close to the purchase button")
 					end
 
-					repeat task.wait() until GetClosestPurchase("Strike "..Values["PunchingBagsType"].." Training", 20) ~= nil or Values["PunchingBagsEnabled"] == false
-					Purchase = GetClosestPurchase("Strike "..Values["PunchingBagsType"].." Training", 20)
+					repeat task.wait() until GetClosestPurchase("Strike "..Values["PunchingBagsType"].." Training", 25) ~= nil or Values["PunchingBagsEnabled"] == false
+					Purchase = GetClosestPurchase("Strike "..Values["PunchingBagsType"].." Training", 25)
 					fireclickdetector(Purchase.ClickDetector)
 				end 
 			end
@@ -196,8 +196,8 @@ local function RunPunchingBags()
 					UILibrary:Notification("Failed", "Make sure you are close to the punching bag", "Close")
 				end
 
-				repeat task.wait() until GetClosestBag(20) ~= nil or Values["PunchingBagsEnabled"] == false
-				Bag = GetClosestBag(20)
+				repeat task.wait() until GetClosestBag(15) ~= nil or Values["PunchingBagsEnabled"] == false
+				Bag = GetClosestBag(15)
 				if Player.Backpack:FindFirstChild("Strike "..Values["PunchingBagsType"].." Training") then
 					Humanoid:EquipTool(Player.Backpack["Strike "..Values["PunchingBagsType"].." Training"])
 
@@ -298,7 +298,7 @@ local function RunThreadmil()
 	if Values["ThreadmilEnabled"] == true then
 		
 		if PlayerGui.TreadmillGain.Frame.Visible == false and PlayerGui.TreadmillGain.Frame2.Visible == false then
-			local closestThreadmil = GetClosestTreadmil(20)
+			local closestThreadmil = GetClosestTreadmil(15)
 			if closestThreadmil ~= nil then
 				fireclickdetector(closestThreadmil.ClickDetector)
 			else
@@ -306,13 +306,16 @@ local function RunThreadmil()
 					UILibrary:Notification("Failed", "Make sure you are close to the threadmil", "Close")
 				end
 
-				repeat task.wait() until GetClosestTreadmil(20) ~= nil or Values["ThreadmilEnabled"] == false	
+				repeat task.wait() until GetClosestTreadmil(15) ~= nil or Values["ThreadmilEnabled"] == false
+				closestThreadmil = GetClosestTreadmil(15)
 				fireclickdetector(closestThreadmil.ClickDetector)
 			end
 			
 			repeat task.wait() until PlayerGui.TreadmillGain.Frame.Visible == true or Values["ThreadmilEnabled"] == false
 			firesignal(PlayerGui.TreadmillGain.Frame[Values["ThreadmilType"]].MouseButton1Up)
 		end
+		
+		task.wait(0.5)
 		
 		if PlayerGui.TreadmillGain.Frame2.Visible == true then
 			if PlayerGui.TreadmillGain.Frame2.Keys:FindFirstChildOfClass("Frame") then
@@ -394,8 +397,27 @@ local function RunDura()
 		local OtherPlayerHumanoid		= OtherPlayerCharacter.Humanoid
 		local Character					= Player.Character
 		local Humanoid					= Character.Humanoid
+		
 
 		if OtherPlayerCharacter and OtherPlayerHumanoid then
+			local OtherPlayerActivated = false
+			local BConnection = nil; BConnection = OtherPlayerHumanoid:GetPropertyChangedSignal("WalkSpeed"):Connect(function(V) 
+				if V == 0 then
+					OtherPlayerActivated = true
+				elseif V == 16 then
+					OtherPlayerActivated = false
+				end 
+			end)
+			
+			local PlayerActivated	= false
+			local CConnection	= nil; CConnection = Humanoid:GetPropertyChangedSignal("WalkSpeed"):Connect(function(V) 
+				if V == 0 then
+					PlayerActivated = true
+				elseif V == 16 then
+					PlayerActivated = false
+				end 
+			end)
+			
 			if DuraBoolValue == true then
 				if Humanoid.Health < Humanoid.MaxHealth then
 					repeat task.wait() until Humanoid.Health >= Humanoid.MaxHealth or Values["DuraEnabled"] == false
@@ -403,7 +425,7 @@ local function RunDura()
 
 				repeat task.wait() until Raycast(Character.HumanoidRootPart.CFrame.p, Character.HumanoidRootPart.CFrame.LookVector * 10, {Character}) == true and (OtherPlayerCharacter:FindFirstChildOfClass("Tool") and OtherPlayerCharacter:FindFirstChildOfClass("Tool").Name == "Combat") or Values["DuraEnabled"] == false
 
-				local closestPurchase	= GetClosestPurchase("Body Conditioning", 20)
+				local closestPurchase	= GetClosestPurchase("Body Conditioning", 25)
 				if not Player.Backpack:FindFirstChild("Body Conditioning") then
 					if closestPurchase ~= nil then
 						fireclickdetector(closestPurchase.ClickDetector)
@@ -412,7 +434,8 @@ local function RunDura()
 							UILibrary:Notification("Failed", "Make sure you are close to the purchase button", "Close")
 						end
 
-						repeat task.wait() until GetClosestPurchase("Body Conditioning", 20) ~= nil or Values["DuraEnabled"] == false	
+						repeat task.wait() until GetClosestPurchase("Body Conditioning", 25) ~= nil or Values["DuraEnabled"] == false	
+						closestPurchase = GetClosestPurchase("Body Conditioning", 25)
 						fireclickdetector(closestPurchase.ClickDetector)
 					end
 				end
@@ -428,8 +451,10 @@ local function RunDura()
 						Character:FindFirstChild("Body Conditioning"):Activate()
 					end
 				end
-
-				repeat task.wait() until Humanoid.WalkSpeed == 16 or returnAnimation(Player, "13470691661") == nil or Values["DuraEnabled"] == false
+				
+				task.wait(1)
+				
+				repeat task.wait() until PlayerActivated == false or returnAnimation(Player, "13470691661") == nil or Values["DuraEnabled"] == false
 				
 				task.wait(2)
 				
@@ -464,7 +489,7 @@ local function RunDura()
 					Character.Humanoid:EquipTool(Player.Backpack["Combat"])
 				end
 
-				repeat task.wait() until ((returnAnimation(OtherPlayer, "13470691661") ~= nil or OtherPlayerHumanoid.WalkSpeed == 0) and OtherPlayerCharacter:FindFirstChild("Body Conditioning")) or Values["DuraEnabled"] == false
+				repeat task.wait() until ((returnAnimation(OtherPlayer, "13470691661") ~= nil or OtherPlayerActivated == true) and OtherPlayerCharacter:FindFirstChild("Body Conditioning")) or Values["DuraEnabled"] == false
 
 				if Player.Character:FindFirstChild("Combat") then
 					local StartingHealth = OtherPlayerHumanoid.Health
@@ -478,12 +503,14 @@ local function RunDura()
 						Player.Character["Combat"]:Activate()
 						repeat task.wait() until StartingHealth ~= OtherPlayerHumanoid.Health or Values["DuraEnabled"] == false
 					end
-
+					
+					task.wait(0.4)
+					
 					repeat task.wait(0.4)
-						if Player.Character:FindFirstChild("Combat") and OtherPlayerHumanoid.WalkSpeed == 0 and OtherPlayerCharacter:FindFirstChild("Body Conditioning") and (OtherPlayerHumanoid.Health - StartingHealth) > StartingHealth then
+						if Player.Character:FindFirstChild("Combat") and OtherPlayerActivated == true and OtherPlayerCharacter:FindFirstChild("Body Conditioning") and (OtherPlayerHumanoid.Health - StartingHealth) > StartingHealth then
 							Punch()
 						end
-					until OtherPlayerHumanoid.WalkSpeed == 16 or (OtherPlayerCharacter.Humanoid.Health - StartingHealth) <= StartingHealth or Values["DuraEnabled"] == false
+					until OtherPlayerActivated == false or (OtherPlayerCharacter.Humanoid.Health - StartingHealth) <= StartingHealth or Values["DuraEnabled"] == false
 
 					if Character:FindFirstChildOfClass("Tool") then
 						Humanoid:UnequipTools()
