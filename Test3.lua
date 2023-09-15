@@ -401,17 +401,17 @@ local function RunDura()
 					Humanoid:EquipTool(Player.Backpack["Body Conditioning"])
 				end
 				
-				task.wait(1)
+				task.wait(2)
 				
-				if Character:FindFirstChild("Body Conditioning") and Values["DuraEnabled"] then
-					if returnAnimation(Player, "13470691661") == false then
+				if Character:FindFirstChild("Body Conditioning") and Values["DuraEnabled"] == true then
+					if returnAnimation(Player, "13470691661") == nil then
 						Character:FindFirstChild("Body Conditioning"):Activate()
 					end
 				end
 
 				repeat task.wait() until not Character:FindFirstChild("Body Conditioning") or Values["DuraEnabled"] == false or not OtherPlayer.Character:FindFirstChild("Combat")
 
-				if Character:FindFirstChild("Body Conditioning") and returnAnimation(Player, "13470691661") == true then
+				if Character:FindFirstChild("Body Conditioning") and returnAnimation(Player, "13470691661") ~= nil then
 					Character:FindFirstChild("Body Conditioning"):Activate()
 				end
 
@@ -434,7 +434,7 @@ local function RunDura()
 					Character.Humanoid:EquipTool(Player.Backpack["Combat"])
 				end
 
-				repeat task.wait() until (returnAnimation(OtherPlayer, "13470691661") == true and OtherPlayerCharacter:FindFirstChild("Body Conditioning")) or Values["DuraEnabled"] == false
+				repeat task.wait() until (returnAnimation(OtherPlayer, "13470691661") ~= nil and OtherPlayerCharacter:FindFirstChild("Body Conditioning")) or Values["DuraEnabled"] == false
 
 				if Player.Character:FindFirstChild("Combat") then
 					local StartingHealth = OtherPlayerHumanoid.Health
