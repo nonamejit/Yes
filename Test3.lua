@@ -296,57 +296,61 @@ local function RunThreadmil()
 	local Humanoid			= Character.Humanoid
 
 	if Values["ThreadmilEnabled"] == true then
-		local closestThreadmil = GetClosestTreadmil(20)
+		
+		if PlayerGui.TreadmillGain.Frame.Visible == false and PlayerGui.TreadmillGain.Frame2.Visible == false then
+			local closestThreadmil = GetClosestTreadmil(20)
+			if closestThreadmil ~= nil then
+				fireclickdetector(closestThreadmil.ClickDetector)
+			else
+				if Values["Debug"] == true then
+					UILibrary:Notification("Failed", "Make sure you are close to the threadmil", "Close")
+				end
 
-		if closestThreadmil ~= nil then
-			fireclickdetector(closestThreadmil.ClickDetector)
-		else
-			if Values["Debug"] == true then
-				UILibrary:Notification("Failed", "Make sure you are close to the threadmil", "Close")
+				repeat task.wait() until GetClosestTreadmil(20) ~= nil or Values["ThreadmilEnabled"] == false	
+				fireclickdetector(closestThreadmil.ClickDetector)
+			end
+			
+			repeat task.wait() until PlayerGui.TreadmillGain.Frame.Visible == true or Values["ThreadmilEnabled"] == false
+			firesignal(PlayerGui.TreadmillGain.Frame[Values["ThreadmilType"]].MouseButton1Up)
+		end
+		
+		if PlayerGui.TreadmillGain.Frame2.Visible == true then
+			if PlayerGui.TreadmillGain.Frame2.Keys:FindFirstChildOfClass("Frame") then
+				if Enum.KeyCode[PlayerGui.TreadmillGain.Frame2.Keys:FindFirstChildOfClass("Frame").Name] then
+					VirtualManager:SendKeyEvent(true, Enum.KeyCode[PlayerGui.TreadmillGain.Frame2.Keys:FindFirstChildOfClass("Frame").Name], 	false, nil)
+					VirtualManager:SendKeyEvent(false, Enum.KeyCode[PlayerGui.TreadmillGain.Frame2.Keys:FindFirstChildOfClass("Frame").Name], false, nil)
+				end
 			end
 
-			repeat task.wait() until GetClosestTreadmil(20) ~= nil or Values["ThreadmilEnabled"] == false	
-			fireclickdetector(closestThreadmil.ClickDetector)
-		end
-
-		repeat task.wait() until PlayerGui.TreadmillGain.Frame.Visible == true or Values["ThreadmilEnabled"] == false
-		firesignal(PlayerGui.TreadmillGain.Frame[Values["ThreadmilType"]].MouseButton1Up)
-
-		if PlayerGui.TreadmillGain.Frame2.Keys:FindFirstChildOfClass("Frame") then
-			if Enum.KeyCode[PlayerGui.TreadmillGain.Frame2.Keys:FindFirstChildOfClass("Frame").Name] then
-				VirtualManager:SendKeyEvent(true, Enum.KeyCode[PlayerGui.TreadmillGain.Frame2.Keys:FindFirstChildOfClass("Frame").Name], 	false, nil)
-				VirtualManager:SendKeyEvent(false, Enum.KeyCode[PlayerGui.TreadmillGain.Frame2.Keys:FindFirstChildOfClass("Frame").Name], false, nil)
-			end
-		end
-
-		local HoldOffConnection = false; local Connection = PlayerGui.TreadmillGain.Frame2.Keys.ChildAdded:Connect(function(Child)
-			if PlayerGui.Main.HUD.Stamina.Clipping.Size.X.Scale >= Values["StaminaValue"] then
-				if Child:IsA("Frame") and HoldOffConnection == false then
-					if Enum.KeyCode[Child.Name] then
-						VirtualManager:SendKeyEvent(true, Enum.KeyCode[Child.Name], false, nil)
-						VirtualManager:SendKeyEvent(false, Enum.KeyCode[Child.Name], false, nil)
-						
-						if PlayerGui.Main.HUD.Stamina.Clipping.Size.X.Scale <= Values["StaminaValue"] then
-							HoldOffConnection = true
-							repeat task.wait() until PlayerGui.Main.HUD.Stamina.Clipping.Size.X.Scale >= 1
-							HoldOffConnection = false
+			local HoldOffConnection = false; local Connection = PlayerGui.TreadmillGain.Frame2.Keys.ChildAdded:Connect(function(Child)
+				if PlayerGui.Main.HUD.Stamina.Clipping.Size.X.Scale >= Values["StaminaValue"] then
+					if Child:IsA("Frame") and HoldOffConnection == false then
+						if Enum.KeyCode[Child.Name] then
+							VirtualManager:SendKeyEvent(true, Enum.KeyCode[Child.Name], false, nil)
+							VirtualManager:SendKeyEvent(false, Enum.KeyCode[Child.Name], false, nil)
+							
+							if PlayerGui.Main.HUD.Stamina.Clipping.Size.X.Scale <= Values["StaminaValue"] then
+								HoldOffConnection = true
+								repeat task.wait() until PlayerGui.Main.HUD.Stamina.Clipping.Size.X.Scale >= 1
+								HoldOffConnection = false
+							end
 						end
 					end
 				end
-			end
-		end)
-
-		repeat wait() until Player.Character.HumanoidRootPart.Anchored == false or Values["ThreadmilEnabled"] == false
-		Connection:Disconnect()
-
-		Eat()
-		if Values["ThreadmilEnabled"] == true then
-			local S, F = pcall(function()
-				RunThreadmil()
 			end)
 
-			if F and Values["Debug"] == true then
-				UILibrary:Notification("Failed", tostring(F), "Close")
+			repeat wait() until Player.Character.HumanoidRootPart.Anchored == false or Values["ThreadmilEnabled"] == false
+			Connection:Disconnect()
+
+			Eat()
+			if Values["ThreadmilEnabled"] == true then
+				local S, F = pcall(function()
+					RunThreadmil()
+				end)
+
+				if F and Values["Debug"] == true then
+					UILibrary:Notification("Failed", tostring(F), "Close")
+				end
 			end
 		end
 	end
@@ -425,7 +429,7 @@ local function RunDura()
 					end
 				end
 
-				repeat task.wait() until not Character:FindFirstChild("Body Conditioning") or Humanoid.WalkSpeed ~= 0 or returnAnimation(Player, "13470691661") == nil or Values["DuraEnabled"] == false
+				repeat task.wait() until Humanoid.WalkSpeed == 16 or returnAnimation(Player, "13470691661") == nil or Values["DuraEnabled"] == false
 				
 				task.wait(2)
 				
@@ -479,7 +483,7 @@ local function RunDura()
 						if Player.Character:FindFirstChild("Combat") and OtherPlayerHumanoid.WalkSpeed == 0 and OtherPlayerCharacter:FindFirstChild("Body Conditioning") and (OtherPlayerHumanoid.Health - StartingHealth) > StartingHealth then
 							Punch()
 						end
-					until not OtherPlayerCharacter:FindFirstChild("Body Conditioning") or OtherPlayerHumanoid.WalkSpeed ~= 0 or (OtherPlayerCharacter.Humanoid.Health - StartingHealth) <= StartingHealth or Values["DuraEnabled"] == false
+					until OtherPlayerHumanoid.WalkSpeed == 16 or (OtherPlayerCharacter.Humanoid.Health - StartingHealth) <= StartingHealth or Values["DuraEnabled"] == false
 
 					if Character:FindFirstChildOfClass("Tool") then
 						Humanoid:UnequipTools()
