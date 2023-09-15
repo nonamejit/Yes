@@ -629,6 +629,11 @@ MiscChan:Bind("Turn off/on Gui", Enum.KeyCode.RightShift, function()
 	end
 end)
 
+Player.Idled:connect(function()
+	VirtualManager:CaptureController()
+	VirtualManager:ClickButton2(Vector2.new())
+end)
+
 PlayerGui.InCombat.CanvasGroup:GetPropertyChangedSignal("GroupTransparency"):Connect(function(V)
 	if V ~= 1 and Values["DisableOnHit"] == true then
 		Values["PunchingBagsEnabled"] 	= false
