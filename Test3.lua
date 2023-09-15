@@ -2,6 +2,7 @@ local Players			= game:GetService("Players")
 local Replicated		= game:GetService("ReplicatedStorage")
 local ReplicatedFirst		= game:GetService("ReplicatedFirst")
 local VirtualManager		= game:GetService("VirtualInputManager")
+local VirtualUser		= game:GetService("VirtualUser")
 
 local Player			= Players.LocalPlayer
 local PlayerGui			= Player.PlayerGui
@@ -49,7 +50,7 @@ local function GetClosestPurchase(Purchase, Distance)
 			if v:FindFirstChild("ClickDetector") and v:FindFirstChild("Part") then
 				local Part				= v:FindFirstChildOfClass("Part")
 				if (Character.HumanoidRootPart.Position - Part.Position).Magnitude < ClosestPurDistance then
-					ClosestPurDistance 	= (Character.HumanoidRootPart.Position - v.Part.Position).Magnitude
+					ClosestPurDistance 	= (Character.HumanoidRootPart.Position - Part.Position).Magnitude
 					ClosestPur			= v
 				end
 			end
@@ -68,7 +69,7 @@ local function GetClosestBag(Distance)
 		if v.Name == "PunchingBag" and v:FindFirstChild("Main") then
 			local Part					= v.Main
 			if (Character.HumanoidRootPart.Position - Part.Position).Magnitude < ClosestPurDistance then
-				ClosestPurDistance 		= (Character.HumanoidRootPart.Position - v.Part.Position).Magnitude
+				ClosestPurDistance 		= (Character.HumanoidRootPart.Position - Part.Position).Magnitude
 				ClosestTrain			= v
 			end
 		end
@@ -234,12 +235,10 @@ local function RunPunchingBags()
 							elseif Hits == 5 then
 								Event:FireServer(unpack({[1] = "M2"})); Hits = 0
 							end
-							
-							if PlayerGui.Main.HUD.Stamina.Clipping.Size.X.Scale < Values["StaminaValue"] then
-								HoldOffConnection = true
-								repeat task.wait() until PlayerGui.Main.HUD.Stamina.Clipping.Size.X.Scale >= 1 or Values["PunchingBagsEnabled"] == false
-								HoldOffConnection = false
-							end
+						elseif HoldOffConnection == false then
+							HoldOffConnection = true
+							repeat task.wait() until PlayerGui.Main.HUD.Stamina.Clipping.Size.X.Scale >= 1 or Values["PunchingBagsEnabled"] == false
+							HoldOffConnection = false
 						end
 					end)
 
@@ -253,14 +252,14 @@ local function RunPunchingBags()
 					if PlayerGui:FindFirstChildOfClass("BillboardGui") then
 						if PlayerGui:FindFirstChildOfClass("BillboardGui").Adornee.Name == "Main" then
 							local HoldOffConnection = false; local Hits = 0; repeat task.wait()
-								if PlayerGui:FindFirstChildOfClass("BillboardGui") and HoldOffConnection == false and PlayerGui.Main.HUD.Stamina.Clipping.Size.X.Scale >= Values["StaminaValue"] then
-									if Hits <= 4 then
-										Hits += 1; Punch()
-									elseif Hits == 5 then
-										Event:FireServer(unpack({[1] = "M2"})); Hits = 0
-									end
-									
-									if PlayerGui.Main.HUD.Stamina.Clipping.Size.X.Scale < Values["StaminaValue"] and HoldOffConnection == false then
+								if PlayerGui:FindFirstChildOfClass("BillboardGui") then
+									if HoldOffConnection == false and PlayerGui.Main.HUD.Stamina.Clipping.Size.X.Scale >= Values["StaminaValue"] then
+										if Hits <= 4 then
+											Hits += 1; Punch()
+										elseif Hits == 5 then
+											Event:FireServer(unpack({[1] = "M2"})); Hits = 0
+										end
+									elseif HoldOffConnection == false then
 										HoldOffConnection = true
 										repeat task.wait() until PlayerGui.Main.HUD.Stamina.Clipping.Size.X.Scale >= 1
 										HoldOffConnection = false
@@ -334,19 +333,17 @@ local function RunThreadmil()
 			end
 
 			local HoldOffConnection = false; local Connection = PlayerGui.TreadmillGain.Frame2.Keys.ChildAdded:Connect(function(Child)
-				if PlayerGui.Main.HUD.Stamina.Clipping.Size.X.Scale >= Values["StaminaValue"] and HoldOffConnection == false then
+				if PlayerGui.Main.HUD.Stamina.Clipping.Size.X.Scale > Values["StaminaValue"] and HoldOffConnection == false then
 					if Child:IsA("Frame") then
 						if Enum.KeyCode[Child.Name] then
 							VirtualManager:SendKeyEvent(true, Enum.KeyCode[Child.Name], false, nil)
 							VirtualManager:SendKeyEvent(false, Enum.KeyCode[Child.Name], false, nil)
-							
-							if PlayerGui.Main.HUD.Stamina.Clipping.Size.X.Scale < Values["StaminaValue"] and HoldOffConnection == false then
-								HoldOffConnection = true
-								repeat task.wait() until PlayerGui.Main.HUD.Stamina.Clipping.Size.X.Scale >= 1 or Values["ThreadmilEnabled"] == false
-								HoldOffConnection = false
-							end
 						end
 					end
+				elseif HoldOffConnection == false then
+					HoldOffConnection = true
+					repeat task.wait() until PlayerGui.Main.HUD.Stamina.Clipping.Size.X.Scale >= 1 or Values["ThreadmilEnabled"] == false
+					HoldOffConnection = false
 				end
 			end)
 
@@ -618,7 +615,7 @@ AutofarmChan:Label("Whoever is doing the hitting set it to false!")
 AutofarmChan:Label("It going to be true for the other person!")
 AutofarmChan:Toggle("Starting dura hit", false, function(value) 
 	Values["DuraStarting"] 	= value
-	DuraBoolValue			= value
+	DuraBoolValue		= value
 end)
 
 local MiscChan			= MainSer:Channel("Miscellaneous")
@@ -663,24 +660,21 @@ MiscChan:Bind("Turn off/on Gui", Enum.KeyCode.RightShift, function()
 	end
 end)
 
-task.spawn(function()
-	PlayerGui.InCombat.CanvasGroup:GetPropertyChangedSignal("GroupTransparency"):Connect(function(V)
-		if V ~= 1 and Values["DisableOnHit"] == true then
-			Values["PunchingBagsEnabled"] 	= false
-			Values["ToolEnabled"]			= false
-			Values["ThreadmilEnabled"]		= false
-	
-			if Values["LeaveAfterCombat"] == true and Values["DuraEnabled"] == false then
-				repeat task.wait() until PlayerGui.InCombat.CanvasGroup.GroupTransparency == 1
-				Player:Kick("Kicked by the leave after combat meanin you we're hit.")
-			end
+PlayerGui.InCombat.CanvasGroup:GetPropertyChangedSignal("GroupTransparency"):Connect(function(V)
+	if V ~= 1 and Values["DisableOnHit"] == true then
+		Values["PunchingBagsEnabled"] 		= false
+		Values["ToolEnabled"]			= false
+		Values["ThreadmilEnabled"]		= false
+
+		if Values["LeaveAfterCombat"] == true and Values["DuraEnabled"] == false then
+			repeat task.wait() until PlayerGui.InCombat.CanvasGroup.GroupTransparency == 1
+			Player:Kick("Kicked by the leave after combat meanin you we're hit.")
 		end
-	end)
+	end
 end)
 
-task.spawn(function()
-	Player.Idled:Connect(function()
-		VirtualManager:CaptureController()
-		VirtualManager:ClickButton2(Vector2.new())
-	end)
+Player.Idled:Connect(function() 
+	VirtualUser:Button2Down(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
+	task.wait(0.1)
+	VirtualUser:Button2Up(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
 end)
