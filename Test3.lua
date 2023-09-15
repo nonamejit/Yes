@@ -622,9 +622,9 @@ end)
 MiscChan:Seperator()
 
 MiscChan:Bind("Turn off/on Gui", Enum.KeyCode.RightShift, function()
-	if game.CoreGui.Discord.MainFrame.Size.X.OffSet == 681 then
+	if game.CoreGui.Discord.MainFrame.Size.X.Offset == 681 then
 		game.CoreGui.Discord.MainFrame:TweenSize(UDim2.new(0, 0, 0, 0), Enum.EasingDirection.Out, Enum.EasingStyle.Quart, .3, true)
-	elseif game.CoreGui.Discord.MainFrame.Size.X.OffSet == 0 then
+	elseif game.CoreGui.Discord.MainFrame.Size.X.Offset == 0 then
 		game.CoreGui.Discord.MainFrame:TweenSize(UDim2.new(0, 681, 0, 396), Enum.EasingDirection.Out, Enum.EasingStyle.Quart, .3, true)
 	end
 end)
