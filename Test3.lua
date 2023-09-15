@@ -629,17 +629,12 @@ MiscChan:Bind("Turn off/on Gui", Enum.KeyCode.RightShift, function()
 	end
 end)
 
-Player.Idled:connect(function()
-	VirtualManager:CaptureController()
-	VirtualManager:ClickButton2(Vector2.new())
-end)
-
 PlayerGui.InCombat.CanvasGroup:GetPropertyChangedSignal("GroupTransparency"):Connect(function(V)
 	if V ~= 1 and Values["DisableOnHit"] == true then
 		Values["PunchingBagsEnabled"] 	= false
 		Values["ToolEnabled"]			= false
 		Values["ThreadmilEnabled"]		= false
-		
+
 		if Values["LeaveAfterCombat"] == true and Values["DuraEnabled"] == false then
 			repeat task.wait() until PlayerGui.InCombat.CanvasGroup.GroupTransparency == 1
 			Player:Kick("Kicked by the leave after combat meanin you we're hit.")
@@ -647,4 +642,7 @@ PlayerGui.InCombat.CanvasGroup:GetPropertyChangedSignal("GroupTransparency"):Con
 	end
 end)
 
-
+Player.Idled:Connect(function()
+	VirtualManager:CaptureController()
+	VirtualManager:ClickButton2(Vector2.new())
+end)
