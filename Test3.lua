@@ -397,7 +397,7 @@ local function RunDura()
 					repeat task.wait() until Humanoid.Health >= Humanoid.MaxHealth or Values["DuraEnabled"] == false
 				end
 
-				repeat task.wait(0.2) until Raycast(Character.HumanoidRootPart.CFrame.p, Character.HumanoidRootPart.CFrame.LookVector * 10, {Character}) == true and (OtherPlayerCharacter:FindFirstChildOfClass("Tool") and OtherPlayerCharacter:FindFirstChildOfClass("Tool").Name == "Combat") or Values["DuraEnabled"] == false
+				repeat task.wait() until Raycast(Character.HumanoidRootPart.CFrame.p, Character.HumanoidRootPart.CFrame.LookVector * 10, {Character}) == true and (OtherPlayerCharacter:FindFirstChildOfClass("Tool") and OtherPlayerCharacter:FindFirstChildOfClass("Tool").Name == "Combat") or Values["DuraEnabled"] == false
 
 				local closestPurchase	= GetClosestPurchase("Body Conditioning", 20)
 				if not Player.Backpack:FindFirstChild("Body Conditioning") then
@@ -425,12 +425,16 @@ local function RunDura()
 					end
 				end
 
-				repeat task.wait() until not Character:FindFirstChild("Body Conditioning") or Values["DuraEnabled"] == false or not OtherPlayer.Character:FindFirstChild("Combat")
+				repeat task.wait() until not Character:FindFirstChild("Body Conditioning") or Character.HumanoidRootPart.Anchored == false or returnAnimation(Player, "13470691661") == nil or Values["DuraEnabled"] == false
 				
 				task.wait(2)
 				
 				if Character:FindFirstChild("Body Conditioning") and returnAnimation(Player, "13470691661") ~= nil then
 					Character:FindFirstChild("Body Conditioning"):Activate()
+				end
+				
+				if Character:FindFirstChildOfClass("Tool") then
+					Humanoid:UnequipTools()
 				end
 
 				Eat()
@@ -446,13 +450,17 @@ local function RunDura()
 					end
 				end
 			elseif DuraBoolValue == false then
-				repeat task.wait(0.2) until Raycast(Character.HumanoidRootPart.CFrame.p, Character.HumanoidRootPart.CFrame.LookVector * 10, {Character}) == true or Values["DuraEnabled"] == false
+				if OtherPlayerHumanoid.Health < OtherPlayerHumanoid.MaxHealth then
+					repeat task.wait() until OtherPlayerHumanoid.Health >= OtherPlayerHumanoid.MaxHealth or Values["DuraEnabled"] == false
+				end
+				
+				repeat task.wait() until Raycast(Character.HumanoidRootPart.CFrame.p, Character.HumanoidRootPart.CFrame.LookVector * 10, {Character}) == true or Values["DuraEnabled"] == false
 
 				if Player.Backpack:FindFirstChild("Combat") then
 					Character.Humanoid:EquipTool(Player.Backpack["Combat"])
 				end
 
-				repeat task.wait() until (returnAnimation(OtherPlayer, "13470691661") ~= nil and OtherPlayerCharacter:FindFirstChild("Body Conditioning")) or Values["DuraEnabled"] == false
+				repeat task.wait() until ((returnAnimation(OtherPlayer, "13470691661") ~= nil or OtherPlayerCharacter.HumanoidRootPart.Anchored == true) and OtherPlayerCharacter:FindFirstChild("Body Conditioning")) or Values["DuraEnabled"] == false
 
 				if Player.Character:FindFirstChild("Combat") then
 					local StartingHealth = OtherPlayerHumanoid.Health
@@ -468,10 +476,10 @@ local function RunDura()
 					end
 
 					repeat task.wait(0.4)
-						if Player.Character:FindFirstChild("Combat") and OtherPlayer.Character:FindFirstChild("Body Conditioning") and (OtherPlayerHumanoid.Health - StartingHealth) > StartingHealth then
+						if Player.Character:FindFirstChild("Combat") and OtherPlayerCharacter.HumanoidRootPart.Anchored == true and OtherPlayerCharacter:FindFirstChild("Body Conditioning") and (OtherPlayerHumanoid.Health - StartingHealth) > StartingHealth then
 							Punch()
 						end
-					until not OtherPlayer.Character:FindFirstChild("Body Conditioning") or (OtherPlayer.Character.Humanoid.Health - StartingHealth) <= StartingHealth or Values["DuraEnabled"] == false
+					until not OtherPlayerCharacter:FindFirstChild("Body Conditioning") or OtherPlayerCharacter.HumanoidRootPart.Anchored == false or (OtherPlayerCharacter.Humanoid.Health - StartingHealth) <= StartingHealth or Values["DuraEnabled"] == false
 
 					if Character:FindFirstChildOfClass("Tool") then
 						Humanoid:UnequipTools()
