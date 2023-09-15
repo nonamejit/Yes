@@ -237,7 +237,7 @@ local function RunPunchingBags()
 							
 							if PlayerGui.Main.HUD.Stamina.Clipping.Size.X.Scale < Values["StaminaValue"] then
 								HoldOffConnection = true
-								repeat task.wait() until PlayerGui.Main.HUD.Stamina.Clipping.Size.X.Scale >= 1
+								repeat task.wait() until PlayerGui.Main.HUD.Stamina.Clipping.Size.X.Scale >= 1 or Values["PunchingBagsEnabled"] == false
 								HoldOffConnection = false
 							end
 						end
@@ -245,6 +245,10 @@ local function RunPunchingBags()
 
 					repeat task.wait() until not Character:FindFirstChild("Gloves") or Values["PunchingBagsEnabled"] == false
 					Connection:Disconnect()
+					
+					if HoldOffConnection == true then
+						repeat task.wait() until PlayerGui.Main.HUD.Stamina.Clipping.Size.X.Scale >= 1 or Values["PunchingBagsEnabled"] == false
+					end
 				elseif Values["PunchingBagsType"] == "Speed" then
 					if PlayerGui:FindFirstChildOfClass("BillboardGui") then
 						if PlayerGui:FindFirstChildOfClass("BillboardGui").Adornee.Name == "Main" then
@@ -256,13 +260,17 @@ local function RunPunchingBags()
 										Event:FireServer(unpack({[1] = "M2"})); Hits = 0
 									end
 									
-									if PlayerGui.Main.HUD.Stamina.Clipping.Size.X.Scale < Values["StaminaValue"] then
+									if PlayerGui.Main.HUD.Stamina.Clipping.Size.X.Scale < Values["StaminaValue"] and HoldOffConnection == false then
 										HoldOffConnection = true
 										repeat task.wait() until PlayerGui.Main.HUD.Stamina.Clipping.Size.X.Scale >= 1
 										HoldOffConnection = false
 									end
 								end
 							until not PlayerGui:FindFirstChildOfClass("BillboardGui") or Values["PunchingBagsEnabled"] == false
+							
+							if HoldOffConnection == true then
+								repeat task.wait() until PlayerGui.Main.HUD.Stamina.Clipping.Size.X.Scale >= 1 or Values["PunchingBagsEnabled"] == false
+							end
 						end
 					end
 				end
@@ -326,15 +334,15 @@ local function RunThreadmil()
 			end
 
 			local HoldOffConnection = false; local Connection = PlayerGui.TreadmillGain.Frame2.Keys.ChildAdded:Connect(function(Child)
-				if PlayerGui.Main.HUD.Stamina.Clipping.Size.X.Scale >= Values["StaminaValue"] then
-					if Child:IsA("Frame") and HoldOffConnection == false then
+				if PlayerGui.Main.HUD.Stamina.Clipping.Size.X.Scale >= Values["StaminaValue"] and HoldOffConnection == false then
+					if Child:IsA("Frame") then
 						if Enum.KeyCode[Child.Name] then
 							VirtualManager:SendKeyEvent(true, Enum.KeyCode[Child.Name], false, nil)
 							VirtualManager:SendKeyEvent(false, Enum.KeyCode[Child.Name], false, nil)
 							
-							if PlayerGui.Main.HUD.Stamina.Clipping.Size.X.Scale <= Values["StaminaValue"] then
+							if PlayerGui.Main.HUD.Stamina.Clipping.Size.X.Scale < Values["StaminaValue"] and HoldOffConnection == false then
 								HoldOffConnection = true
-								repeat task.wait() until PlayerGui.Main.HUD.Stamina.Clipping.Size.X.Scale >= 1
+								repeat task.wait() until PlayerGui.Main.HUD.Stamina.Clipping.Size.X.Scale >= 1 or Values["ThreadmilEnabled"] == false
 								HoldOffConnection = false
 							end
 						end
@@ -344,6 +352,10 @@ local function RunThreadmil()
 
 			repeat wait() until Player.Character.HumanoidRootPart.Anchored == false or Values["ThreadmilEnabled"] == false
 			Connection:Disconnect()
+			
+			if HoldOffConnection == true then
+				repeat task.wait() until PlayerGui.Main.HUD.Stamina.Clipping.Size.X.Scale >= 1 or Values["ThreadmilEnabled"] == false
+			end
 
 			Eat()
 			if Values["ThreadmilEnabled"] == true then
@@ -400,24 +412,6 @@ local function RunDura()
 		
 
 		if OtherPlayerCharacter and OtherPlayerHumanoid then
-			local OtherPlayerActivated = false
-			local BConnection = nil; BConnection = OtherPlayerHumanoid:GetPropertyChangedSignal("WalkSpeed"):Connect(function(V) 
-				if V == 0 then
-					OtherPlayerActivated = true
-				elseif V == 16 then
-					OtherPlayerActivated = false
-				end 
-			end)
-			
-			local PlayerActivated	= false
-			local CConnection	= nil; CConnection = Humanoid:GetPropertyChangedSignal("WalkSpeed"):Connect(function(V) 
-				if V == 0 then
-					PlayerActivated = true
-				elseif V == 16 then
-					PlayerActivated = false
-				end 
-			end)
-			
 			if DuraBoolValue == true then
 				if Humanoid.Health < Humanoid.MaxHealth then
 					repeat task.wait() until Humanoid.Health >= Humanoid.MaxHealth or Values["DuraEnabled"] == false
@@ -454,7 +448,7 @@ local function RunDura()
 				
 				task.wait(1)
 				
-				repeat task.wait() until PlayerActivated == false or returnAnimation(Player, "13470691661") == nil or Values["DuraEnabled"] == false
+				repeat task.wait() until returnAnimation(Player, "13470691661") == nil or not OtherPlayerCharacter:FindFirstChild("Combat") or Values["DuraEnabled"] == false
 				
 				task.wait(2)
 				
@@ -489,11 +483,12 @@ local function RunDura()
 					Character.Humanoid:EquipTool(Player.Backpack["Combat"])
 				end
 
-				repeat task.wait() until ((returnAnimation(OtherPlayer, "13470691661") ~= nil or OtherPlayerActivated == true) and OtherPlayerCharacter:FindFirstChild("Body Conditioning")) or Values["DuraEnabled"] == false
+				repeat task.wait() until ((returnAnimation(OtherPlayer, "13470691661") ~= nil) and OtherPlayerCharacter:FindFirstChild("Body Conditioning")) or Values["DuraEnabled"] == false
 
 				if Player.Character:FindFirstChild("Combat") then
 					local StartingHealth = OtherPlayerHumanoid.Health
-
+					local timer = time()
+					
 					if Values["DuraEnabled"] == true then
 						local C = nil; C = OtherPlayerHumanoid.HealthChanged:Connect(function(H) 
 							StartingHealth = StartingHealth - OtherPlayerHumanoid.Health
@@ -507,10 +502,10 @@ local function RunDura()
 					task.wait(0.4)
 					
 					repeat task.wait(0.4)
-						if Player.Character:FindFirstChild("Combat") and OtherPlayerActivated == true and OtherPlayerCharacter:FindFirstChild("Body Conditioning") and (OtherPlayerHumanoid.Health - StartingHealth) > StartingHealth then
+						if Player.Character:FindFirstChild("Combat") and OtherPlayerCharacter:FindFirstChild("Body Conditioning") and ((timer - time()) < 15) and (OtherPlayerHumanoid.Health - StartingHealth) > StartingHealth and Values["DuraEnabled"] == true then
 							Punch()
 						end
-					until OtherPlayerActivated == false or (OtherPlayerCharacter.Humanoid.Health - StartingHealth) <= StartingHealth or Values["DuraEnabled"] == false
+					until (OtherPlayerCharacter.Humanoid.Health - StartingHealth) <= StartingHealth or ((timer - time()) > 15) or Values["DuraEnabled"] == false
 
 					if Character:FindFirstChildOfClass("Tool") then
 						Humanoid:UnequipTools()
@@ -668,20 +663,24 @@ MiscChan:Bind("Turn off/on Gui", Enum.KeyCode.RightShift, function()
 	end
 end)
 
-PlayerGui.InCombat.CanvasGroup:GetPropertyChangedSignal("GroupTransparency"):Connect(function(V)
-	if V ~= 1 and Values["DisableOnHit"] == true then
-		Values["PunchingBagsEnabled"] 	= false
-		Values["ToolEnabled"]			= false
-		Values["ThreadmilEnabled"]		= false
-
-		if Values["LeaveAfterCombat"] == true and Values["DuraEnabled"] == false then
-			repeat task.wait() until PlayerGui.InCombat.CanvasGroup.GroupTransparency == 1
-			Player:Kick("Kicked by the leave after combat meanin you we're hit.")
+task.spawn(function()
+	PlayerGui.InCombat.CanvasGroup:GetPropertyChangedSignal("GroupTransparency"):Connect(function(V)
+		if V ~= 1 and Values["DisableOnHit"] == true then
+			Values["PunchingBagsEnabled"] 	= false
+			Values["ToolEnabled"]			= false
+			Values["ThreadmilEnabled"]		= false
+	
+			if Values["LeaveAfterCombat"] == true and Values["DuraEnabled"] == false then
+				repeat task.wait() until PlayerGui.InCombat.CanvasGroup.GroupTransparency == 1
+				Player:Kick("Kicked by the leave after combat meanin you we're hit.")
+			end
 		end
-	end
+	end)
 end)
 
-Player.Idled:Connect(function()
-	VirtualManager:CaptureController()
-	VirtualManager:ClickButton2(Vector2.new())
+task.spawn(function()
+	Player.Idled:Connect(function()
+		VirtualManager:CaptureController()
+		VirtualManager:ClickButton2(Vector2.new())
+	end)
 end)
