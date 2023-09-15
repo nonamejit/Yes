@@ -548,7 +548,7 @@ AutofarmChan:Toggle("Tool Training", false, function(value)
 	end
 end)
 
-AutofarmChan:Dropdown("Type of training", "Push up", {"Push Up", "Squat", "Sit Up"}, function(value) 
+AutofarmChan:Dropdown("Type of training", "Push Up", {"Push Up", "Squat", "Sit Up"}, function(value) 
 	Values["ToolType"]	= value
 end)
 
