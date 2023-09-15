@@ -2234,7 +2234,8 @@ function DiscordLib:Window(text)
 				Icon.Size = UDim2.new(0, 13, 0, 13)
 				Icon.Image = "http://www.roblox.com/asset/?id=6035047409"
 				Icon.ImageColor3 = Color3.fromRGB(114, 118, 125)
-
+				pcall(callback, toggled)
+				
 				Toggle.MouseButton1Click:Connect(function()
 					if toggled == false then
 						TweenService:Create(
