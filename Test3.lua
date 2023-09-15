@@ -621,13 +621,10 @@ end)
 
 MiscChan:Seperator()
 
-local OnOff = true
 MiscChan:Bind("Turn off/on Gui", Enum.KeyCode.RightShift, function()
-	if OnOff == true then
-		OnOff = false
+	if game.CoreGui.Discord.MainFrame.Size.X.OffSet == 681 then
 		game.CoreGui.Discord.MainFrame:TweenSize(UDim2.new(0, 0, 0, 0), Enum.EasingDirection.Out, Enum.EasingStyle.Quart, .3, true)
-	elseif OnOff == false then
-		OnOff = true
+	elseif game.CoreGui.Discord.MainFrame.Size.X.OffSet == 0 then
 		game.CoreGui.Discord.MainFrame:TweenSize(UDim2.new(0, 681, 0, 396), Enum.EasingDirection.Out, Enum.EasingStyle.Quart, .3, true)
 	end
 end)
@@ -638,7 +635,7 @@ PlayerGui.InCombat.CanvasGroup:GetPropertyChangedSignal("GroupTransparency"):Con
 		Values["ToolEnabled"]			= false
 		Values["ThreadmilEnabled"]		= false
 		
-		if Values["LeaveAfterCombat"] == true then
+		if Values["LeaveAfterCombat"] == true and Values["DuraEnabled"] == false then
 			repeat task.wait() until PlayerGui.InCombat.CanvasGroup.GroupTransparency == 1
 			Player:Kick("Kicked by the leave after combat meanin you we're hit.")
 		end
