@@ -400,7 +400,9 @@ local function RunDura()
 				if Player.Backpack:FindFirstChild("Body Conditioning") then
 					Humanoid:EquipTool(Player.Backpack["Body Conditioning"])
 				end
-
+				
+				task.wait(1)
+				
 				if Character:FindFirstChild("Body Conditioning") and Values["DuraEnabled"] then
 					if returnAnimation(Player, "13470691661") == false then
 						Character:FindFirstChild("Body Conditioning"):Activate()
