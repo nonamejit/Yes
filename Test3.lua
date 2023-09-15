@@ -425,7 +425,7 @@ local function RunDura()
 					end
 				end
 
-				repeat task.wait() until not Character:FindFirstChild("Body Conditioning") or Character.HumanoidRootPart.Anchored == false or returnAnimation(Player, "13470691661") == nil or Values["DuraEnabled"] == false
+				repeat task.wait() until not Character:FindFirstChild("Body Conditioning") or Humanoid.WalkSpeed ~= 0 or returnAnimation(Player, "13470691661") == nil or Values["DuraEnabled"] == false
 				
 				task.wait(2)
 				
@@ -460,7 +460,7 @@ local function RunDura()
 					Character.Humanoid:EquipTool(Player.Backpack["Combat"])
 				end
 
-				repeat task.wait() until ((returnAnimation(OtherPlayer, "13470691661") ~= nil or OtherPlayerCharacter.HumanoidRootPart.Anchored == true) and OtherPlayerCharacter:FindFirstChild("Body Conditioning")) or Values["DuraEnabled"] == false
+				repeat task.wait() until ((returnAnimation(OtherPlayer, "13470691661") ~= nil or OtherPlayerHumanoid.WalkSpeed == 0) and OtherPlayerCharacter:FindFirstChild("Body Conditioning")) or Values["DuraEnabled"] == false
 
 				if Player.Character:FindFirstChild("Combat") then
 					local StartingHealth = OtherPlayerHumanoid.Health
@@ -476,10 +476,10 @@ local function RunDura()
 					end
 
 					repeat task.wait(0.4)
-						if Player.Character:FindFirstChild("Combat") and OtherPlayerCharacter.HumanoidRootPart.Anchored == true and OtherPlayerCharacter:FindFirstChild("Body Conditioning") and (OtherPlayerHumanoid.Health - StartingHealth) > StartingHealth then
+						if Player.Character:FindFirstChild("Combat") and OtherPlayerHumanoid.WalkSpeed == 0 and OtherPlayerCharacter:FindFirstChild("Body Conditioning") and (OtherPlayerHumanoid.Health - StartingHealth) > StartingHealth then
 							Punch()
 						end
-					until not OtherPlayerCharacter:FindFirstChild("Body Conditioning") or OtherPlayerCharacter.HumanoidRootPart.Anchored == false or (OtherPlayerCharacter.Humanoid.Health - StartingHealth) <= StartingHealth or Values["DuraEnabled"] == false
+					until not OtherPlayerCharacter:FindFirstChild("Body Conditioning") or OtherPlayerHumanoid.WalkSpeed ~= 0 or (OtherPlayerCharacter.Humanoid.Health - StartingHealth) <= StartingHealth or Values["DuraEnabled"] == false
 
 					if Character:FindFirstChildOfClass("Tool") then
 						Humanoid:UnequipTools()
