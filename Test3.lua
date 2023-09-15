@@ -386,7 +386,7 @@ local DuraBoolValue		= false
 local function RunDura()
 	if Values["DuraEnabled"] == true then
 		local OtherPlayer				= Players[Values["DuraSelected"]]
-		local OtherPlayerCharacter 	= OtherPlayer.Character
+		local OtherPlayerCharacter 		= OtherPlayer.Character
 		local OtherPlayerHumanoid		= OtherPlayerCharacter.Humanoid
 		local Character					= Player.Character
 		local Humanoid					= Character.Humanoid
@@ -426,7 +426,9 @@ local function RunDura()
 				end
 
 				repeat task.wait() until not Character:FindFirstChild("Body Conditioning") or Values["DuraEnabled"] == false or not OtherPlayer.Character:FindFirstChild("Combat")
-
+				
+				task.wait(2)
+				
 				if Character:FindFirstChild("Body Conditioning") and returnAnimation(Player, "13470691661") ~= nil then
 					Character:FindFirstChild("Body Conditioning"):Activate()
 				end
@@ -460,18 +462,16 @@ local function RunDura()
 							StartingHealth = StartingHealth - OtherPlayerHumanoid.Health
 							C:Disconnect();
 						end)
+						
+						Player.Character["Combat"]:Activate()
+						repeat task.wait() until StartingHealth ~= OtherPlayerHumanoid.Health or Values["DuraEnabled"] == false
 					end
 
-					Player.Character["Combat"]:Activate()
-					repeat task.wait() until StartingHealth ~= OtherPlayerHumanoid.Health or Values["DuraEnabled"] == false
-
-					repeat task.wait(0.5)
+					repeat task.wait(0.4)
 						if Player.Character:FindFirstChild("Combat") and OtherPlayer.Character:FindFirstChild("Body Conditioning") and (OtherPlayerHumanoid.Health - StartingHealth) > StartingHealth then
 							Punch()
 						end
 					until not OtherPlayer.Character:FindFirstChild("Body Conditioning") or (OtherPlayer.Character.Humanoid.Health - StartingHealth) <= StartingHealth or Values["DuraEnabled"] == false
-
-					task.wait(4)
 
 					if Character:FindFirstChildOfClass("Tool") then
 						Humanoid:UnequipTools()
@@ -646,3 +646,5 @@ PlayerGui.InCombat.CanvasGroup:GetPropertyChangedSignal("GroupTransparency"):Con
 		end
 	end
 end)
+
+
