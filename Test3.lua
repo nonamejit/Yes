@@ -1,7 +1,7 @@
 local Players			= game:GetService("Players")
 local Replicated		= game:GetService("ReplicatedStorage")
-local ReplicatedFirst	= game:GetService("ReplicatedFirst")
-local VirtualManager	= game:GetService("VirtualInputManager")
+local ReplicatedFirst		= game:GetService("ReplicatedFirst")
+local VirtualManager		= game:GetService("VirtualInputManager")
 local VirtualUser		= game:GetService("VirtualUser")
 local TweenService		= game:GetService("TweenService")
 
@@ -485,9 +485,13 @@ local function RunDura()
 					Character.Humanoid:EquipTool(Player.Backpack["Combat"])
 				end
 
-				repeat task.wait() until ((returnAnimation(OtherPlayer, "13470691661") ~= nil) and OtherPlayerHumanoid.WalkSpeed <= 0 and OtherPlayerCharacter:FindFirstChild("Body Conditioning")) or Values["DuraEnabled"] == false
+				repeat task.wait() until returnAnimation(OtherPlayer, "13470691661") ~= nil and OtherPlayerHumanoid.WalkSpeed <= 0 and OtherPlayerCharacter:FindFirstChild("Body Conditioning")) or Values["DuraEnabled"] == false
 
 				task.wait(0.2)
+				
+				if returnAnimation(OtherPlayer, "13470691661") == nil then
+					repeat task.wait() until returnAnimation(OtherPlayer, "13470691661") ~= nil
+				end
 
 				if Player.Character:FindFirstChild("Combat") then
 					local StartingHealth = OtherPlayerHumanoid.Health
