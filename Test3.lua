@@ -1,8 +1,9 @@
 local Players			= game:GetService("Players")
 local Replicated		= game:GetService("ReplicatedStorage")
-local ReplicatedFirst		= game:GetService("ReplicatedFirst")
-local VirtualManager		= game:GetService("VirtualInputManager")
+local ReplicatedFirst	= game:GetService("ReplicatedFirst")
+local VirtualManager	= game:GetService("VirtualInputManager")
 local VirtualUser		= game:GetService("VirtualUser")
+local TweenService		= game:GetService("TweenService")
 
 local Player			= Players.LocalPlayer
 local PlayerGui			= Player.PlayerGui
@@ -235,10 +236,9 @@ local function RunPunchingBags()
 							elseif Hits == 5 then
 								Event:FireServer(unpack({[1] = "M2"})); Hits = 0
 							end
-						elseif HoldOffConnection == false then
-							HoldOffConnection = true
-							repeat task.wait() until PlayerGui.Main.HUD.Stamina.Clipping.Size.X.Scale >= 1 or Values["PunchingBagsEnabled"] == false
-							HoldOffConnection = false
+							if PlayerGui.Main.HUD.Stamina.Clipping.Size.X.Scale <= Values["StaminaValue"] then
+								HoldOffConnection = true
+							end
 						end
 					end)
 
@@ -253,16 +253,13 @@ local function RunPunchingBags()
 						if PlayerGui:FindFirstChildOfClass("BillboardGui").Adornee.Name == "Main" then
 							local HoldOffConnection = false; local Hits = 0; repeat task.wait()
 								if PlayerGui:FindFirstChildOfClass("BillboardGui") then
-									if HoldOffConnection == false and PlayerGui.Main.HUD.Stamina.Clipping.Size.X.Scale >= Values["StaminaValue"] then
-										if Hits <= 4 then
-											Hits += 1; Punch()
-										elseif Hits == 5 then
-											Event:FireServer(unpack({[1] = "M2"})); Hits = 0
-										end
-									elseif HoldOffConnection == false then
+									if Hits <= 4 then
+										Hits += 1; Punch()
+									elseif Hits == 5 then
+										Event:FireServer(unpack({[1] = "M2"})); Hits = 0
+									end
+									if PlayerGui.Main.HUD.Stamina.Clipping.Size.X.Scale <= Values["StaminaValue"] then
 										HoldOffConnection = true
-										repeat task.wait() until PlayerGui.Main.HUD.Stamina.Clipping.Size.X.Scale >= 1
-										HoldOffConnection = false
 									end
 								end
 							until not PlayerGui:FindFirstChildOfClass("BillboardGui") or Values["PunchingBagsEnabled"] == false
@@ -431,7 +428,7 @@ local function RunDura()
 						fireclickdetector(closestPurchase.ClickDetector)
 					end
 				end
-				
+
 				task.wait(1)
 
 				if Player.Backpack:FindFirstChild("Body Conditioning") then
@@ -485,9 +482,9 @@ local function RunDura()
 				end
 
 				repeat task.wait() until ((returnAnimation(OtherPlayer, "13470691661") ~= nil) and OtherPlayerHumanoid.WalkSpeed <= 0 and OtherPlayerCharacter:FindFirstChild("Body Conditioning")) or Values["DuraEnabled"] == false
-				
+
 				task.wait(0.2)
-				
+
 				if Player.Character:FindFirstChild("Combat") then
 					local StartingHealth = OtherPlayerHumanoid.Health
 					local timer = time()
@@ -507,9 +504,9 @@ local function RunDura()
 							Punch()
 						end
 					until ((OtherPlayerCharacter.Humanoid.Health - StartingHealth) <= StartingHealth and OtherPlayerCharacter:FindFirstChild("Body Conditioning")) or not OtherPlayerCharacter:FindFirstChild("Body Conditioning") or ((timer - time()) >= 15) or Values["DuraEnabled"] == false
-					
+
 					task.wait(1)
-					
+
 					if Player.Character:FindFirstChild("Combat") then
 						Humanoid:UnequipTools()
 					end
@@ -592,15 +589,11 @@ end)
 AutofarmChan:Seperator()
 
 AutofarmChan:Toggle("Dura Training", false, function(value) 
-	Values["DuraEnabled"] = value
+	Values["DuraEnabled"] 	= value
+	DuraBoolValue			= Values["DuraStarting"]
 
 	if value == true then
 		local S, F = pcall(function()
-			if Values["DuraStarting"] == false then
-				DuraBoolValue = false
-			elseif Values["DuraStarting"] == true then
-				DuraBoolValue = true
-			end
 			RunDura()
 		end)
 
@@ -617,12 +610,16 @@ end)
 Players.PlayerAdded		:Connect(function(OtherPlayer) DuraDropDown:Add(OtherPlayer.Name) 	end)
 Players.PlayerRemoving	:Connect(function(OtherPlayer) DuraDropDown:Remove(OtherPlayer.Name) end)
 
-AutofarmChan:Label("Whoever is doing the hitting set it to false!")
-AutofarmChan:Label("It going to be true for the other person!")
+AutofarmChan:Seperator()
+
 AutofarmChan:Toggle("Starting dura hit", false, function(value) 
 	Values["DuraStarting"] 	= value
-	DuraBoolValue		= value
+	DuraBoolValue			= value
 end)
+
+AutofarmChan:Label("Whoever is doing the hitting set it to false! \nIt going to be true for the other person!")
+
+AutofarmChan:Seperator()
 
 local MiscChan			= MainSer:Channel("Miscellaneous")
 MiscChan:Toggle("Auto eat", false, function(value) 
@@ -641,13 +638,37 @@ end)
 
 MiscChan:Seperator()
 
-MiscChan:Label("Does not work for dura cause that doesn't make sense..")
 MiscChan:Toggle("Disable on hit", false, function(value) 
 	Values["DisableOnHit"] = value
 end)
+MiscChan:Label("Does not work for dura cause that doesn't make sense..")
 
-MiscChan:Toggle("Leave after combat", false, function(value) 
-	Values["LeaveAfterCombat"] = value
+MiscChan:Seperator()
+
+MiscChan:Toggle("Disable on gangbase door's being attacked", false, function(Value) 
+	Values["DisableGangBaseDoor"] = Value
+end)
+MiscChan:Label("Disable's everything apon the gang base door's being \nattacked (MUST OWN GANGBASE)")
+
+MiscChan:Seperator()
+
+MiscChan:Toggle("Disable on gangbase door's being attacked", false, function(Value) 
+	Values["DisableVaultDoor"] = Value
+end)
+MiscChan:Label("Disable's everything apon the gang base vault being \nattacked")
+MiscChan:Label("Not needed if u have gang base door being attacked on \n(MUST OWN GANGBASE)")
+
+MiscChan:Seperator()
+
+MiscChan:Toggle("Leave after combat", false, function(Value) 
+	Values["LeaveAfterCombat"] = Value
+end)
+MiscChan:Label("If (on) this will kick you if gang base door/vault attacked \n(MUST OWN GANGBASE) Also disable on hit")
+
+MiscChan:Seperator()
+
+MiscChan:Toggle("Notify on gang base doors being attacked", false, function(Value) 
+	Values["NotifyOnGangBaseDoors"] = Value
 end)
 
 MiscChan:Seperator()
@@ -666,9 +687,76 @@ MiscChan:Bind("Turn off/on Gui", Enum.KeyCode.RightShift, function()
 	end
 end)
 
+MiscChan:Seperator()
+
+local NotifiyDeb = false 
+for i,v in pairs(game.Workspace.GangBase.Hitable:GetChildren()) do
+	if v.Name == "Door" then
+		if v:FindFirstChild("Health") then
+			v.Health.Bar.Fill:GetPropertyChangedSignal("Size"):Connect(function() 
+				local V = v.Health.Bar.Fill.Size.X.Scale
+				if V ~= 1 and NotifiyDeb == false and Player:IsInGroup(tonumber(game.Workspace.GangBase:GetAttribute("BaseOwner"))) then
+					NotifiyDeb = true
+					if Values["DisableGangBaseDoor"] == true then
+						Values["PunchingBagsEnabled"] 	= false
+						Values["ToolEnabled"]			= false
+						Values["ThreadmilEnabled"]		= false
+						Values["DuraEnabled"]			= false
+						
+						if Values["LeaveAfterCombat"] == true then
+							if PlayerGui.InCombat.CanvasGroup.GroupTransparency ~= 1 then
+								repeat task.wait() until PlayerGui.InCombat.CanvasGroup.GroupTransparency == 1
+							end
+							
+							Player:Kick("Kicked by the leave after combat meanin gang base doors were being attacked.")
+						end
+					end
+					
+					if Values["NotifyOnGangBaseDoors"] == true then
+						if not PlayerGui.Regions:FindFirstChild("Noti") then
+							if PlayerGui.Region:FindFirstChild("GYM") then
+								local A = Player.Region.GYM:Clone()
+								A.Name	= "Noti"
+							end
+						end
+						
+						if PlayerGui.Regions:FindFirstChild("Noti") then
+							PlayerGui.Regions:FindFirstChild("Noti").Text = "Gang base doors being attacked!"
+							TweenService:Create(PlayerGui.Regions:FindFirstChild("Noti"), TweenInfo.new(0.5, Enum.EasingStyle.Linear, {TextTransparency = 0})):Play()
+							task.wait(2)
+							TweenService:Create(PlayerGui.Regions:FindFirstChild("Noti"), TweenInfo.new(0.5, Enum.EasingStyle.Linear, {TextTransparency = 1})):Play()
+						end
+					end
+				elseif NotifiyDeb == true and V >= 1 then
+					NotifiyDeb = false
+				end 
+			end)
+		end
+	end
+end
+
+PlayerGui.VaultHealth.Bar.Fill:GetPropertyChangedSignal("Size"):Connect(function()
+	local V = PlayerGui.VaultHealth.Bar.Fill.Size.X.Scale
+	
+	if V ~= 1 and Values["DisableVaultDoor"] == true and Player:IsInGroup(tonumber(game.Workspace.GangBase:GetAttribute("BaseOwner"))) then
+		Values["PunchingBagsEnabled"] 	= false
+		Values["ToolEnabled"]			= false
+		Values["ThreadmilEnabled"]		= false
+		Values["DuraEnabled"]			= false
+
+		if Values["LeaveAfterCombat"] == true then
+			if PlayerGui.InCombat.CanvasGroup.GroupTransparency ~= 1 then
+				repeat task.wait() until PlayerGui.InCombat.CanvasGroup.GroupTransparency == 1
+			end
+
+			Player:Kick("Kicked by the leave after combat meanin gang base vault were being attacked.")
+		end
+	end
+end)
+
 PlayerGui.InCombat.CanvasGroup:GetPropertyChangedSignal("GroupTransparency"):Connect(function(V)
 	if V ~= 1 and Values["DisableOnHit"] == true then
-		Values["PunchingBagsEnabled"] 		= false
+		Values["PunchingBagsEnabled"] 	= false
 		Values["ToolEnabled"]			= false
 		Values["ThreadmilEnabled"]		= false
 
