@@ -230,7 +230,7 @@ local function RunPunchingBags()
 					end
 
 					local HoldOffConnection = false; local Hits = 0; local Connection = nil; Connection = PlayerGui.ChildAdded:Connect(function(Child) 
-						if Child:IsA("BillboardGui") and HoldOffConnection == false and PlayerGui.Main.HUD.Stamina.Clipping.Size.X.Scale >= Values["StaminaValue"] and Child:FindFirstChild("ImageLabel") and Child.Adornee.Name == "Main" then
+						if Child:IsA("BillboardGui") and PlayerGui.Main.HUD.Stamina.Clipping.Size.X.Scale >= Values["StaminaValue"] and Child:FindFirstChild("ImageLabel") and Child.Adornee.Name == "Main" then
 							if Hits <= 4 then
 								Hits += 1; Punch()
 							elseif Hits == 5 then
