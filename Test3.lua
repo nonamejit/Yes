@@ -485,7 +485,7 @@ local function RunDura()
 					Character.Humanoid:EquipTool(Player.Backpack["Combat"])
 				end
 
-				repeat task.wait() until returnAnimation(OtherPlayer, "13470691661") ~= nil and OtherPlayerHumanoid.WalkSpeed <= 0 and OtherPlayerCharacter:FindFirstChild("Body Conditioning")) or Values["DuraEnabled"] == false
+				repeat task.wait() until returnAnimation(OtherPlayer, "13470691661") ~= nil and OtherPlayerHumanoid.WalkSpeed <= 0 and OtherPlayerCharacter:FindFirstChild("Body Conditioning") or Values["DuraEnabled"] == false
 
 				task.wait(0.2)
 				
