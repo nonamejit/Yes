@@ -735,6 +735,10 @@ for i,v in pairs(game.Workspace.GangBase.Hitable:GetChildren()) do
 	end
 end
 
+if not PlayerGui:FindFirstChild("VaultHealth") then
+	game.Workspace.GangBase.Main.VaultHealth:Clone().Parent = PlayerGui
+end
+
 PlayerGui.VaultHealth.Bar.Fill:GetPropertyChangedSignal("Size"):Connect(function()
 	local V = PlayerGui.VaultHealth.Bar.Fill.Size.X.Scale
 	
