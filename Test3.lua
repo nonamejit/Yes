@@ -441,8 +441,8 @@ local function RunDura()
 					if returnAnimation(Player, "13470691661") == nil then
 						Character:FindFirstChild("Body Conditioning"):Activate()
 						
-						if returnAnimation(Player, "13470691661") == nil then
-							Character:FindFirstChild("Body Conditioning")
+						if returnAnimation(Player, "13470691661") == nil and OtherPlayerHumanoid.WalkSpeed > 0 then
+							Character:FindFirstChild("Body Conditioning"):Activate()
 						end
 					end
 				end
