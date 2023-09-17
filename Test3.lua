@@ -1,7 +1,7 @@
 local Players			= game:GetService("Players")
 local Replicated		= game:GetService("ReplicatedStorage")
-local ReplicatedFirst		= game:GetService("ReplicatedFirst")
-local VirtualManager		= game:GetService("VirtualInputManager")
+local ReplicatedFirst	= game:GetService("ReplicatedFirst")
+local VirtualManager	= game:GetService("VirtualInputManager")
 local VirtualUser		= game:GetService("VirtualUser")
 local TweenService		= game:GetService("TweenService")
 
@@ -440,12 +440,16 @@ local function RunDura()
 				if Character:FindFirstChild("Body Conditioning") and Values["DuraEnabled"] == true then
 					if returnAnimation(Player, "13470691661") == nil then
 						Character:FindFirstChild("Body Conditioning"):Activate()
+						
+						if returnAnimation(Player, "13470691661") == nil then
+							Character:FindFirstChild("Body Conditioning")
+						end
 					end
 				end
 
 				task.wait(1)
 
-				repeat task.wait() until not Character:FindFirstChild("Body Conditioning") or not OtherPlayerCharacter:FindFirstChild("Combat") or Values["DuraEnabled"] == false
+				repeat task.wait() until not Character:FindFirstChild("Body Conditioning") and returnAnimation(Player, "13470691661") == nil or not OtherPlayerCharacter:FindFirstChild("Combat") or Values["DuraEnabled"] == false
 
 				task.wait(2)
 
@@ -714,8 +718,8 @@ for i,v in pairs(game.Workspace.GangBase.Hitable:GetChildren()) do
 					
 					if Values["NotifyOnGangBaseDoors"] == true then
 						if not PlayerGui.Regions:FindFirstChild("Noti") then
-							if PlayerGui.Region:FindFirstChild("GYM") then
-								local A = Player.Region.GYM:Clone()
+							if PlayerGui.Regions:FindFirstChild("GYM") then
+								local A = Player.Regions.GYM:Clone()
 								A.Name	= "Noti"
 							end
 						end
