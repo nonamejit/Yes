@@ -723,7 +723,7 @@ for i,v in pairs(game.Workspace.GangBase.Hitable:GetChildren()) do
 					if Values["NotifyOnGangBaseDoors"] == true then
 						if not PlayerGui.Regions:FindFirstChild("Noti") then
 							if PlayerGui.Regions:FindFirstChild("GYM") then
-								local A = Player.Regions.GYM:Clone()
+								local A = PlayerGui.Regions.GYM:Clone()
 								A.Name	= "Noti"
 							end
 						end
