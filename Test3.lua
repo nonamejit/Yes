@@ -1,7 +1,7 @@
 local Players			= game:GetService("Players")
 local Replicated		= game:GetService("ReplicatedStorage")
-local ReplicatedFirst	= game:GetService("ReplicatedFirst")
-local VirtualManager	= game:GetService("VirtualInputManager")
+local ReplicatedFirst		= game:GetService("ReplicatedFirst")
+local VirtualManager		= game:GetService("VirtualInputManager")
 local VirtualUser		= game:GetService("VirtualUser")
 local TweenService		= game:GetService("TweenService")
 
@@ -652,7 +652,7 @@ MiscChan:Label("Disable's everything apon the gang base door's being \nattacked 
 
 MiscChan:Seperator()
 
-MiscChan:Toggle("Disable on gangbase door's being attacked", false, function(Value) 
+MiscChan:Toggle("Disable on gangbase vault being attacked", false, function(Value) 
 	Values["DisableVaultDoor"] = Value
 end)
 MiscChan:Label("Disable's everything apon the gang base vault being \nattacked")
