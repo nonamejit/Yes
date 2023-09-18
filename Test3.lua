@@ -230,7 +230,7 @@ local function RunPunchingBags()
 					end
 
 					local HoldOffConnection = false; local Hits = 0; local Connection = nil; Connection = PlayerGui.ChildAdded:Connect(function(Child) 
-						if Child:IsA("BillboardGui") and Child:FindFirstChild("ImageLabel") and Child.Adornee.Name == "Main" then
+						if Child:IsA("BillboardGui") and Child:FindFirstChild("ImageLabel") and Child.Adornee.Name == "Main" and (HoldOffConnection == false and Values["PunchingRegenStam"] == true) or Values["PunchingRegenStam"] == false then
 							if Hits <= 4 then
 								Hits += 1; Punch()
 							elseif Hits == 5 then
@@ -238,6 +238,10 @@ local function RunPunchingBags()
 							end
 							if PlayerGui.Main.HUD.Stamina.Clipping.Size.X.Scale <= Values["StaminaValue"] then
 								HoldOffConnection = true
+								if Values["PunchingRegenStam"] == true then
+									repeat task.wait() until PlayerGui.Main.HUD.Stamina.Clipping.Size.X.Scale >= 1 or Values["PunchingBagsEnabled"] == false
+									HoldOffConnection = false
+								end
 							end
 						end
 					end)
@@ -260,6 +264,9 @@ local function RunPunchingBags()
 									end
 									if PlayerGui.Main.HUD.Stamina.Clipping.Size.X.Scale <= Values["StaminaValue"] then
 										HoldOffConnection = true
+										if Values["PunchingRegenStam"] == true then
+											repeat task.wait() until PlayerGui.Main.HUD.Stamina.Clipping.Size.X.Scale >= 1 or Values["PunchingBagsEnabled"] == false
+										end
 									end
 								end
 							until not PlayerGui:FindFirstChildOfClass("BillboardGui") or Values["PunchingBagsEnabled"] == false
@@ -440,7 +447,7 @@ local function RunDura()
 				if Character:FindFirstChild("Body Conditioning") and Values["DuraEnabled"] == true then
 					if returnAnimation(Player, "13470691661") == nil then
 						Character:FindFirstChild("Body Conditioning"):Activate()
-						
+
 						if returnAnimation(Player, "13470691661") == nil and OtherPlayerHumanoid.WalkSpeed > 0 then
 							Character:FindFirstChild("Body Conditioning"):Activate()
 						end
@@ -488,7 +495,7 @@ local function RunDura()
 				repeat task.wait() until returnAnimation(OtherPlayer, "13470691661") ~= nil and OtherPlayerHumanoid.WalkSpeed <= 0 and OtherPlayerCharacter:FindFirstChild("Body Conditioning") or Values["DuraEnabled"] == false
 
 				task.wait(0.2)
-				
+
 				if returnAnimation(OtherPlayer, "13470691661") == nil then
 					repeat task.wait() until returnAnimation(OtherPlayer, "13470691661") ~= nil
 				end
@@ -553,6 +560,10 @@ end)
 
 AutofarmChan:Dropdown("Type of training", "Power", {"Power", "Speed"}, function(value) 
 	Values["PunchingBagsType"] = value
+end)
+
+AutofarmChan:Toggle("Regen stam mid train", false, function(value) 
+	Values["PunchingRegenStam"] = value
 end)
 
 AutofarmChan:Seperator()
@@ -710,29 +721,30 @@ for i,v in pairs(game.Workspace.GangBase.Hitable:GetChildren()) do
 						Values["ToolEnabled"]			= false
 						Values["ThreadmilEnabled"]		= false
 						Values["DuraEnabled"]			= false
-						
+
 						if Values["LeaveAfterCombat"] == true then
 							if PlayerGui.InCombat.CanvasGroup.GroupTransparency ~= 1 then
 								repeat task.wait() until PlayerGui.InCombat.CanvasGroup.GroupTransparency == 1
 							end
-							
+
 							Player:Kick("Kicked by the leave after combat meanin gang base doors were being attacked.")
 						end
 					end
-					
+
 					if Values["NotifyOnGangBaseDoors"] == true then
 						if not PlayerGui.Regions:FindFirstChild("Noti") then
 							if PlayerGui.Regions:FindFirstChild("GYM") then
 								local A = PlayerGui.Regions.GYM:Clone()
 								A.Name	= "Noti"
+								A.Parent = PlayerGui.Regions
 							end
 						end
-						
+
 						if PlayerGui.Regions:FindFirstChild("Noti") then
 							PlayerGui.Regions:FindFirstChild("Noti").Text = "Gang base doors being attacked!"
-							TweenService:Create(PlayerGui.Regions:FindFirstChild("Noti"), TweenInfo.new(0.5, Enum.EasingStyle.Linear, {TextTransparency = 0})):Play()
+							TweenService:Create(PlayerGui.Regions:FindFirstChild("Noti"), TweenInfo.new(0.5, Enum.EasingStyle.Linear), {TextTransparency = 0}):Play()
 							task.wait(2)
-							TweenService:Create(PlayerGui.Regions:FindFirstChild("Noti"), TweenInfo.new(0.5, Enum.EasingStyle.Linear, {TextTransparency = 1})):Play()
+							TweenService:Create(PlayerGui.Regions:FindFirstChild("Noti"), TweenInfo.new(0.5, Enum.EasingStyle.Linear), {TextTransparency = 1}):Play()
 						end
 					end
 				elseif NotifiyDeb == true and V >= 1 then
@@ -749,7 +761,7 @@ end
 
 PlayerGui.VaultHealth.Bar.Fill:GetPropertyChangedSignal("Size"):Connect(function()
 	local V = PlayerGui.VaultHealth.Bar.Fill.Size.X.Scale
-	
+
 	if V ~= 1 and Values["DisableVaultDoor"] == true and Player:IsInGroup(tonumber(game.Workspace.GangBase:GetAttribute("BaseOwner"))) then
 		Values["PunchingBagsEnabled"] 	= false
 		Values["ToolEnabled"]			= false
