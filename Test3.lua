@@ -742,6 +742,15 @@ for i,v in pairs(game.Workspace.GangBase.Hitable:GetChildren()) do
 
 						if PlayerGui.Regions:FindFirstChild("Noti") then
 							PlayerGui.Regions:FindFirstChild("Noti").Text = "Gang base doors being attacked!"
+							task.spawn(function() 
+								local A = Instance.new("Sound")
+								A.Parent = game.Players.LocalPlayer.PlayerGui
+								A.SoundId	= "rbxassetid://6522880384"
+								A.Volume	= 4
+								A:Play()
+								repeat task.wait() until A.IsPlaying == false
+								A:Destroy()
+							end)
 							TweenService:Create(PlayerGui.Regions:FindFirstChild("Noti"), TweenInfo.new(0.5, Enum.EasingStyle.Linear), {TextTransparency = 0}):Play()
 							task.wait(2)
 							TweenService:Create(PlayerGui.Regions:FindFirstChild("Noti"), TweenInfo.new(0.5, Enum.EasingStyle.Linear), {TextTransparency = 1}):Play()
