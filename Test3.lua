@@ -686,7 +686,7 @@ MiscChan:Label("If (on) this will kick you if gang base door/vault attacked \n(M
 
 MiscChan:Seperator()
 
-MiscChan:Toggle("Notify on gang base doors being attacked", false, function(Value) 
+MiscChan:Toggle("Notify on gang base doors being attacked", true, function(Value) 
 	Values["NotifyOnGangBaseDoors"] = Value
 end)
 
