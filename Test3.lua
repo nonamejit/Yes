@@ -30,7 +30,7 @@ local function Eat()
 						v.Parent:Activate()
 					end
 
-					task.wait(tonumber(v.Parent:GetAttribute("EatTime")))
+					task.wait(tonumber(v.Parent:GetAttribute("EatTime")) + 0.5)
 
 					if Player.Character:FindFirstChildOfClass("Tool") then
 						Humanoid:UnequipTools()
@@ -134,24 +134,29 @@ local function Raycast(Position, Direction, Ignore)
 end
 
 local CanPunch	= false
-local function Punch()
-	if CanPunch == false and Player.Character and Player.Character:FindFirstChild("Combat") then
-		CanPunch = true
-		Player.Character["Combat"]:Activate()
 
-		local Animation
-		for i,v in pairs(ReplicatedFirst:WaitForChild("Anims"):WaitForChild(Player.Character["Combat"]:GetAttribute("Name")):GetChildren()) do
-			if (v.Name == "1" or v.Name == "2" and v.Name == "3" or v.Name == "4" or v.Name == "5") and v:IsA("Animation") then
-				if returnAnimation(Player, v.AnimationId) ~= nil  then
-					Animation = returnAnimation(Player, v.AnimationId)
+local function Punch()
+	if CanPunch == false and Player.Character and Player.Character:FindFirstChild("Combat") then		
+		local C; C = Player.Character.Humanoid:GetPropertyChangedSignal("WalkSpeed"):Connect(function() 
+			local V = Player.Character.Humanoid.WalkSpeed
+			if V then
+				if V == 2 or V == 4 then
+					CanPunch = true
+				elseif V > 4 then
+					CanPunch = false
 				end
 			end
+		end)
+
+		if Player.Character:FindFirstChild("Combat") then
+			Player.Character["Combat"]:Activate()
 		end
 
-		if Animation ~= nil then
-			repeat task.wait() until Animation.IsPlaying == false or Values["PunchingBagsEnabled"] == false or Values["DuraEnabled"] == false or Values["ToolEnabled"] == false or Values["ThreadmilEnabled"] == false
-		end
+		repeat task.wait() until CanPunch == false or Values["DuraEnabled"] == false or Values["PunchingBagsEnabled"] == false or Values["ToolEnabled"] == false or Values["ThreadmilEnabled"] == false
+
 		CanPunch = false
+		C:Disconnect()
+		C = nil
 	end
 end
 
@@ -415,7 +420,6 @@ local function RunDura()
 		local Character					= Player.Character
 		local Humanoid					= Character.Humanoid
 
-
 		if OtherPlayerCharacter and OtherPlayerHumanoid then
 			if DuraBoolValue == true then
 				Humanoid:UnequipTools()
@@ -423,7 +427,7 @@ local function RunDura()
 					repeat task.wait() until Humanoid.Health >= Humanoid.MaxHealth or Values["DuraEnabled"] == false
 				end
 
-				repeat task.wait() until Raycast(Character.HumanoidRootPart.CFrame.p, Character.HumanoidRootPart.CFrame.LookVector * 10, {Character}) == true and (OtherPlayerCharacter:FindFirstChildOfClass("Tool") and OtherPlayerCharacter:FindFirstChildOfClass("Tool").Name == "Combat") or Values["DuraEnabled"] == false
+				repeat task.wait() until Raycast(Character.HumanoidRootPart.CFrame.p, Character.HumanoidRootPart.CFrame.LookVector * 10, {Character}) == true or Values["DuraEnabled"] == false
 
 				local closestPurchase	= GetClosestPurchase("Body Conditioning", 25)
 				if not Player.Backpack:FindFirstChild("Body Conditioning") then
@@ -446,25 +450,21 @@ local function RunDura()
 					Humanoid:EquipTool(Player.Backpack["Body Conditioning"])
 				end
 
-				task.wait(2)
+				repeat task.wait() until (OtherPlayerCharacter:FindFirstChildOfClass("Tool") and OtherPlayerCharacter:FindFirstChildOfClass("Tool").Name == "Combat")
 
 				if Character:FindFirstChild("Body Conditioning") and Values["DuraEnabled"] == true then
 					if returnAnimation(Player, "13470691661") == nil then
 						Character:FindFirstChild("Body Conditioning"):Activate()
 
-						if returnAnimation(Player, "13470691661") == nil and OtherPlayerHumanoid.WalkSpeed > 0 then
+						if returnAnimation(Player, "13470691661") == nil and OtherPlayerHumanoid.WalkSpeed < 0 then
 							Character:FindFirstChild("Body Conditioning"):Activate()
 						end
 					end
 				end
 
-				task.wait(1)
+				repeat task.wait() until (not Character:FindFirstChild("Body Conditioning") and returnAnimation(Player, "13470691661") == nil) or not OtherPlayerCharacter:FindFirstChild("Combat") or Values["DuraEnabled"] == false
 
-				repeat task.wait() until not Character:FindFirstChild("Body Conditioning") and returnAnimation(Player, "13470691661") == nil or not OtherPlayerCharacter:FindFirstChild("Combat") or Values["DuraEnabled"] == false
-
-				task.wait(2)
-
-				if Character:FindFirstChild("Body Conditioning") and returnAnimation(Player, "13470691661") ~= nil then
+				if (Character:FindFirstChild("Body Conditioning") and returnAnimation(Player, "13470691661") ~= nil) then
 					Character:FindFirstChild("Body Conditioning"):Activate()
 				end
 
@@ -490,19 +490,13 @@ local function RunDura()
 					repeat task.wait() until OtherPlayerHumanoid.Health >= OtherPlayerHumanoid.MaxHealth or Values["DuraEnabled"] == false
 				end
 
-				repeat task.wait() until Raycast(Character.HumanoidRootPart.CFrame.p, Character.HumanoidRootPart.CFrame.LookVector * 10, {Character}) == true or Values["DuraEnabled"] == false
+				repeat task.wait() until Raycast(Character.HumanoidRootPart.CFrame.p, Character.HumanoidRootPart.CFrame.LookVector * 10, {Character}) == true and OtherPlayerCharacter:FindFirstChild("Body Conditioning") or Values["DuraEnabled"] == false
 
 				if Player.Backpack:FindFirstChild("Combat") then
 					Character.Humanoid:EquipTool(Player.Backpack["Combat"])
 				end
 
-				repeat task.wait() until returnAnimation(OtherPlayer, "13470691661") ~= nil and OtherPlayerHumanoid.WalkSpeed <= 0 and OtherPlayerCharacter:FindFirstChild("Body Conditioning") or Values["DuraEnabled"] == false
-
-				task.wait(0.2)
-
-				if returnAnimation(OtherPlayer, "13470691661") == nil then
-					repeat task.wait() until returnAnimation(OtherPlayer, "13470691661") ~= nil
-				end
+				repeat task.wait() until (returnAnimation(OtherPlayer, "13470691661") ~= nil and OtherPlayerHumanoid.WalkSpeed <= 0 and OtherPlayerCharacter:FindFirstChild("Body Conditioning")) or Values["DuraEnabled"] == false
 
 				if Player.Character:FindFirstChild("Combat") then
 					local StartingHealth = OtherPlayerHumanoid.Health
@@ -518,7 +512,7 @@ local function RunDura()
 						repeat task.wait() until StartingHealth ~= OtherPlayerHumanoid.Health or Values["DuraEnabled"] == false
 					end
 
-					repeat task.wait(0.4)
+					repeat task.wait()						
 						if Player.Character:FindFirstChild("Combat") and OtherPlayerHumanoid.WalkSpeed <= 0 and OtherPlayerCharacter:FindFirstChild("Body Conditioning") and ((timer - time()) < 15) and (OtherPlayerHumanoid.Health - StartingHealth) > StartingHealth and Values["DuraEnabled"] == true then
 							Punch()
 						end
@@ -549,9 +543,9 @@ local function RunDura()
 end
 
 local AutofarmChan		= MainSer:Channel("Autofarm's")
-AutofarmChan:Toggle("Strike Power/Speed Training", false, function(value) 
-	Values["PunchingBagsEnabled"] = value
-	if value == true then
+AutofarmChan:Toggle("Strike Power/Speed Training", false, function(Value) 
+	Values["PunchingBagsEnabled"] = Value
+	if Value == true then
 		local S, F = pcall(function()
 			RunPunchingBags()
 		end)
@@ -562,19 +556,19 @@ AutofarmChan:Toggle("Strike Power/Speed Training", false, function(value)
 	end
 end)
 
-AutofarmChan:Dropdown("Type of training", "Power", {"Power", "Speed"}, function(value) 
-	Values["PunchingBagsType"] = value
+AutofarmChan:Dropdown("Type of training", "Power", {"Power", "Speed"}, function(Value) 
+	Values["PunchingBagsType"] = Value
 end)
 
-AutofarmChan:Toggle("Regen stam mid train", false, function(value) 
-	Values["PunchingRegenStam"] = value
+AutofarmChan:Toggle("Regen stam mid train", false, function(Value) 
+	Values["PunchingRegenStam"] = Value
 end)
 
 AutofarmChan:Seperator()
 
-AutofarmChan:Toggle("Treadmil Training", false, function(value) 
-	Values["ThreadmilEnabled"] = value
-	if value == true then
+AutofarmChan:Toggle("Treadmil Training", false, function(Value) 
+	Values["ThreadmilEnabled"] = Value
+	if Value == true then
 		local S, F = pcall(function()
 			RunThreadmil()
 		end)
@@ -585,16 +579,16 @@ AutofarmChan:Toggle("Treadmil Training", false, function(value)
 	end
 end)
 
-AutofarmChan:Dropdown("Type of training", "Speed", {"Speed", "Stamina"}, function(value) 
-	Values["ThreadmilType"] = value
+AutofarmChan:Dropdown("Type of training", "Speed", {"Speed", "Stamina"}, function(Value) 
+	Values["ThreadmilType"] = Value
 end)
 
 AutofarmChan:Seperator()
 
-AutofarmChan:Toggle("Tool Training", false, function(value) 
-	Values["ToolEnabled"] = value
+AutofarmChan:Toggle("Tool Training", false, function(Value) 
+	Values["ToolEnabled"] = Value
 
-	if value == true then
+	if Value == true then
 		local S, F = pcall(function()
 			RunAutoTool()
 		end)
@@ -605,17 +599,17 @@ AutofarmChan:Toggle("Tool Training", false, function(value)
 	end
 end)
 
-AutofarmChan:Dropdown("Type of training", "Push Up", {"Push Up", "Squat", "Sit Up"}, function(value) 
-	Values["ToolType"]	= value
+AutofarmChan:Dropdown("Type of training", "Push Up", {"Push Up", "Squat", "Sit Up"}, function(Value) 
+	Values["ToolType"]	= Value
 end)
 
 AutofarmChan:Seperator()
 
-AutofarmChan:Toggle("Dura Training", false, function(value) 
-	Values["DuraEnabled"] 	= value
+AutofarmChan:Toggle("Dura Training", false, function(Value) 
+	Values["DuraEnabled"] 	= Value
 	DuraBoolValue			= Values["DuraStarting"]
 
-	if value == true then
+	if Value == true then
 		local S, F = pcall(function()
 			RunDura()
 		end)
@@ -626,18 +620,22 @@ AutofarmChan:Toggle("Dura Training", false, function(value)
 	end
 end)
 
-local PlayerList = {}; for i,v in pairs(Players:GetPlayers()) do table.insert(PlayerList, v.Name) end
-local DuraDropDown = AutofarmChan:Dropdown("Player to dura farm with", "", PlayerList, function(value) 
-	Values["DuraSelected"] = value
+local PlayerList = {}; for i,v in pairs(Players:GetPlayers()) do 
+	if v ~= Player then
+		table.insert(PlayerList, v.Name) 
+	end
+end
+local DuraDropDown = AutofarmChan:Dropdown("Player to dura farm with", "", PlayerList, function(Value) 
+	Values["DuraSelected"] = Value
 end)
-Players.PlayerAdded		:Connect(function(OtherPlayer) DuraDropDown:Add(OtherPlayer.Name) 	end)
+Players.PlayerAdded	:Connect(function(OtherPlayer) DuraDropDown:Add(OtherPlayer.Name) 	end)
 Players.PlayerRemoving	:Connect(function(OtherPlayer) DuraDropDown:Remove(OtherPlayer.Name) end)
 
 AutofarmChan:Seperator()
 
-AutofarmChan:Toggle("Starting dura hit", false, function(value) 
-	Values["DuraStarting"] 	= value
-	DuraBoolValue			= value
+AutofarmChan:Toggle("Starting dura hit", false, function(Value) 
+	Values["DuraStarting"] 	= Value
+	DuraBoolValue			= Value
 end)
 
 AutofarmChan:Label("Whoever is doing the hitting set it to false! \nIt going to be true for the other person!")
@@ -645,24 +643,24 @@ AutofarmChan:Label("Whoever is doing the hitting set it to false! \nIt going to 
 AutofarmChan:Seperator()
 
 local MiscChan			= MainSer:Channel("Miscellaneous")
-MiscChan:Toggle("Auto eat", false, function(value) 
-	Values["HungerEnabled"] = value
+MiscChan:Toggle("Auto eat", false, function(Value) 
+	Values["HungerEnabled"] = Value
 end)
 
-MiscChan:Slider("Hunger limit", 0, 100, 25, function(value) 
-	Values["HungerValue"] = value * 0.01
-end)
-
-MiscChan:Seperator()
-
-MiscChan:Slider("Stamina limit", 0, 100, 20, function(value) 
-	Values["StaminaValue"] = value * 0.01
+MiscChan:Slider("Hunger limit", 0, 100, 25, function(Value) 
+	Values["HungerValue"] = Value * 0.01
 end)
 
 MiscChan:Seperator()
 
-MiscChan:Toggle("Disable on hit", false, function(value) 
-	Values["DisableOnHit"] = value
+MiscChan:Slider("Stamina limit", 0, 100, 20, function(Value) 
+	Values["StaminaValue"] = Value * 0.01
+end)
+
+MiscChan:Seperator()
+
+MiscChan:Toggle("Disable on hit", false, function(Value) 
+	Values["DisableOnHit"] = Value
 end)
 MiscChan:Label("Does not work for dura cause that doesn't make sense..")
 
@@ -690,14 +688,22 @@ MiscChan:Label("If (on) this will kick you if gang base door/vault attacked \n(M
 
 MiscChan:Seperator()
 
-MiscChan:Toggle("Notify on gang base doors being attacked", true, function(Value) 
+MiscChan:Toggle("Notify on gang base doors being attacked", false, function(Value) 
 	Values["NotifyOnGangBaseDoors"] = Value
+end)
+
+MiscChan:Toggle("Sound on notify", false, function(Value) 
+	Values["SoundNotifyEnabled"] = Value
+end)
+
+MiscChan:Slider("Sound volume", 0, 5, 1, function(Value) 
+	Values["SoundVolume"] = Value
 end)
 
 MiscChan:Seperator()
 
-MiscChan:Toggle("Debugger", false, function(value) 
-	Values["Debug"] = value
+MiscChan:Toggle("Debugger", false, function(Value) 
+	Values["Debug"] = Value
 end)
 
 MiscChan:Seperator()
@@ -746,15 +752,18 @@ for i,v in pairs(game.Workspace.GangBase.Hitable:GetChildren()) do
 
 						if PlayerGui.Regions:FindFirstChild("Noti") then
 							PlayerGui.Regions:FindFirstChild("Noti").Text = "Gang base doors being attacked!"
-							task.spawn(function() 
-								local A = Instance.new("Sound")
-								A.Parent = game.Players.LocalPlayer.PlayerGui
-								A.SoundId	= "rbxassetid://6522880384"
-								A.Volume	= 4
-								A:Play()
-								repeat task.wait() until A.IsPlaying == false
-								A:Destroy()
-							end)
+							if Values["SoundNotifyEnabled"] == true then
+								task.spawn(function() 
+									local A 	= Instance.new("Sound")
+									A.Parent 	= PlayerGui
+									A.SoundId	= "rbxassetid://6522880384"
+									A.Volume	= Values["SoundVolume"]
+									A:Play()
+									repeat task.wait() until A.IsPlaying == false
+									A:Destroy()
+								end)
+							end
+
 							TweenService:Create(PlayerGui.Regions:FindFirstChild("Noti"), TweenInfo.new(0.5, Enum.EasingStyle.Linear), {TextTransparency = 0}):Play()
 							task.wait(2)
 							TweenService:Create(PlayerGui.Regions:FindFirstChild("Noti"), TweenInfo.new(0.5, Enum.EasingStyle.Linear), {TextTransparency = 1}):Play()
