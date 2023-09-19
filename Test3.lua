@@ -22,7 +22,7 @@ local function Eat()
 	if PlayerGui.Main.HUD.Hunger.Clipping.Size.X.Scale <= Values["HungerValue"] and Values["HungerEnabled"] == true then
 		for i,v in pairs(Player.Backpack:GetDescendants()) do
 			if v.Name == "EatAnimation" and v:IsA("Animation") then
-				if Player and Player.Character and Player.Character:FindFirstChildOfClass("Humanoid") then
+				if PlayerGui.Main.HUD.Hunger.Clipping.Size.X.Scale < 1 and Player and Player.Character and Player.Character:FindFirstChildOfClass("Humanoid") then
 					local Humanoid	= Player.Character.Humanoid
 					Humanoid:EquipTool(v.Parent)
 
@@ -266,8 +266,10 @@ local function RunPunchingBags()
 									if PlayerGui.Main.HUD.Stamina.Clipping.Size.X.Scale <= Values["StaminaValue"] and HoldOffConnection == false then
 										HoldOffConnection = true
 										if Values["PunchingRegenStam"] == true and HoldOffConnection == true and PlayerGui:FindFirstChildOfClass("BillboardGui") then
-											repeat task.wait() until PlayerGui.Main.HUD.Stamina.Clipping.Size.X.Scale >= 1 or Values["PunchingBagsEnabled"] == false
-											HoldOffConnection = false
+											repeat task.wait() until PlayerGui.Main.HUD.Stamina.Clipping.Size.X.Scale >= 1 or not PlayerGui:FindFirstChildOfClass("BillboardGui") or not Character:FindFirstChild("Gloves") or Values["PunchingBagsEnabled"] == false
+											if PlayerGui.Main.HUD.Stamina.Clipping.Size.X.Scale >= 1 then
+												HoldOffConnection = false
+											end
 										end
 									end
 								end
@@ -773,7 +775,7 @@ end
 local function fireVault()
 	local V = PlayerGui.VaultHealth.Bar.Fill.Size.X.Scale
 
-	if game.Workspace.GangBase.Outside.BillboardGui.Label.Text == "You need 10 players in the server for gang bases!" or V ~= 1 and Player:IsInGroup(tonumber(game.Workspace.GangBase:GetAttribute("BaseOwner"))) and Values["DisableVaultDoor"] == true then
+	if (game.Workspace.GangBase.Outside.BillboardGui.Label.Text == "You need 10 players in the server for gang bases!" or V ~= 1) and Player:IsInGroup(tonumber(game.Workspace.GangBase:GetAttribute("BaseOwner"))) and Values["DisableVaultDoor"] == true then
 		Values["PunchingBagsEnabled"] 	= false
 		Values["ToolEnabled"]			= false
 		Values["ThreadmilEnabled"]		= false
