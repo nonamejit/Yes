@@ -30,7 +30,7 @@ local function Eat()
 						v.Parent:Activate()
 					end
 
-					task.wait(2)
+					task.wait(tonumber(v.Parent:GetAttribute("EatTime")))
 
 					if Player.Character:FindFirstChildOfClass("Tool") then
 						Humanoid:UnequipTools()
