@@ -266,10 +266,11 @@ local function RunPunchingBags()
 										HoldOffConnection = true
 										if Values["PunchingRegenStam"] == true then
 											repeat task.wait() until PlayerGui.Main.HUD.Stamina.Clipping.Size.X.Scale >= 1 or Values["PunchingBagsEnabled"] == false
+											HoldOffConnection = false
 										end
 									end
 								end
-							until not PlayerGui:FindFirstChildOfClass("BillboardGui") or Values["PunchingBagsEnabled"] == false
+							until not PlayerGui:FindFirstChildOfClass("BillboardGui") or not Character:FindFirstChild("Gloves") or Values["PunchingBagsEnabled"] == false
 
 							if HoldOffConnection == true then
 								repeat task.wait() until PlayerGui.Main.HUD.Stamina.Clipping.Size.X.Scale >= 1 or Values["PunchingBagsEnabled"] == false
