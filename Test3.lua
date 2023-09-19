@@ -773,7 +773,7 @@ end
 local function fireVault()
 	local V = PlayerGui.VaultHealth.Bar.Fill.Size.X.Scale
 
-	if game.Workspace.GangBase.Outside.BillboardGui.Label.Text == "You need 10 players in the server for gang bases!" or V ~= 1 and Player:IsInGroup(tonumber(game.Workspace.GangBase:GetAttribute("BaseOwner")))  and Values["DisableVaultDoor"] == true then
+	if game.Workspace.GangBase.Outside.BillboardGui.Label.Text == "You need 10 players in the server for gang bases!" or V ~= 1 and Player:IsInGroup(tonumber(game.Workspace.GangBase:GetAttribute("BaseOwner"))) and Values["DisableVaultDoor"] == true then
 		Values["PunchingBagsEnabled"] 	= false
 		Values["ToolEnabled"]			= false
 		Values["ThreadmilEnabled"]		= false
