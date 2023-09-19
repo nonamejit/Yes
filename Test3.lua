@@ -170,7 +170,7 @@ local function RunPunchingBags()
 					fireclickdetector(Purchase.ClickDetector)
 				else 
 					if Values["Debug"] == true then
-						UILibrary:Notification("Failed", "Make sure you are close to the purchase button")
+						UILibrary:Notification("Failed", "Make sure you are close to the purchase button", "Close")
 					end
 
 					repeat task.wait() until GetClosestPurchase("Strike "..Values["PunchingBagsType"].." Training", 25) ~= nil or Values["PunchingBagsEnabled"] == false
@@ -236,9 +236,9 @@ local function RunPunchingBags()
 							elseif Hits == 5 then
 								Event:FireServer(unpack({[1] = "M2"})); Hits = 0
 							end
-							if PlayerGui.Main.HUD.Stamina.Clipping.Size.X.Scale <= Values["StaminaValue"] then
+							if PlayerGui.Main.HUD.Stamina.Clipping.Size.X.Scale <= Values["StaminaValue"] and HoldOffConnection == false then
 								HoldOffConnection = true
-								if Values["PunchingRegenStam"] == true then
+								if Values["PunchingRegenStam"] == true and HoldOffConnection == true then
 									repeat task.wait() until PlayerGui.Main.HUD.Stamina.Clipping.Size.X.Scale >= 1 or Values["PunchingBagsEnabled"] == false
 									HoldOffConnection = false
 								end
@@ -255,16 +255,17 @@ local function RunPunchingBags()
 				elseif Values["PunchingBagsType"] == "Speed" then
 					if PlayerGui:FindFirstChildOfClass("BillboardGui") then
 						if PlayerGui:FindFirstChildOfClass("BillboardGui").Adornee.Name == "Main" then
-							local HoldOffConnection = false; local Hits = 0; repeat task.wait()
+							local HoldOffConnection = false; local Hits = 0; 
+							repeat task.wait()
 								if PlayerGui:FindFirstChildOfClass("BillboardGui") then
 									if Hits <= 4 then
 										Hits += 1; Punch()
 									elseif Hits == 5 then
 										Event:FireServer(unpack({[1] = "M2"})); Hits = 0
 									end
-									if PlayerGui.Main.HUD.Stamina.Clipping.Size.X.Scale <= Values["StaminaValue"] then
+									if PlayerGui.Main.HUD.Stamina.Clipping.Size.X.Scale <= Values["StaminaValue"] and HoldOffConnection == false then
 										HoldOffConnection = true
-										if Values["PunchingRegenStam"] == true then
+										if Values["PunchingRegenStam"] == true and HoldOffConnection == true and PlayerGui:FindFirstChildOfClass("BillboardGui") then
 											repeat task.wait() until PlayerGui.Main.HUD.Stamina.Clipping.Size.X.Scale >= 1 or Values["PunchingBagsEnabled"] == false
 											HoldOffConnection = false
 										end
@@ -291,7 +292,7 @@ local function RunPunchingBags()
 					end)
 
 					if F and Values["Debug"] == true then
-						UILibrary:Notification("Failed", tostring(F))
+						UILibrary:Notification("Failed", tostring(F), "Close")
 					end
 				end
 			end
@@ -478,7 +479,7 @@ local function RunDura()
 					end)
 
 					if F and Values["Debug"] == true then
-						UILibrary:Notification("Failed", tostring(F))
+						UILibrary:Notification("Failed", tostring(F), "Close")
 					end
 				end
 			elseif DuraBoolValue == false then
@@ -769,10 +770,10 @@ if not PlayerGui:FindFirstChild("VaultHealth") then
 	game.Workspace.GangBase.Main.VaultHealth:Clone().Parent = PlayerGui
 end
 
-PlayerGui.VaultHealth.Bar.Fill:GetPropertyChangedSignal("Size"):Connect(function()
+local function fireVault()
 	local V = PlayerGui.VaultHealth.Bar.Fill.Size.X.Scale
 
-	if V ~= 1 and Values["DisableVaultDoor"] == true and Player:IsInGroup(tonumber(game.Workspace.GangBase:GetAttribute("BaseOwner"))) then
+	if game.Workspace.GangBase.Outside.BillboardGui.Label.Text == "You need 10 players in the server for gang bases!" or V ~= 1 and and Player:IsInGroup(tonumber(game.Workspace.GangBase:GetAttribute("BaseOwner")))  and Values["DisableVaultDoor"] == true then
 		Values["PunchingBagsEnabled"] 	= false
 		Values["ToolEnabled"]			= false
 		Values["ThreadmilEnabled"]		= false
@@ -785,6 +786,12 @@ PlayerGui.VaultHealth.Bar.Fill:GetPropertyChangedSignal("Size"):Connect(function
 
 			Player:Kick("Kicked by the leave after combat meanin gang base vault were being attacked.")
 		end
+	end
+end
+
+task.spawn(function() 
+	while task.wait() do
+		fireVault()
 	end
 end)
 
