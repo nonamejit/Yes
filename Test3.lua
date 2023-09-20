@@ -447,7 +447,9 @@ local function RunDura()
 				task.wait(1)
 
 				if Player.Backpack:FindFirstChild("Body Conditioning") then
-					Humanoid:EquipTool(Player.Backpack["Body Conditioning"])
+					repeat task.wait()
+						Humanoid:EquipTool(Player.Backpack["Body Conditioning"])
+					until Character:FindFirstChild("Body Conditioning")	
 				end
 
 				repeat task.wait() until (OtherPlayerCharacter:FindFirstChildOfClass("Tool") and OtherPlayerCharacter:FindFirstChildOfClass("Tool").Name == "Combat")
@@ -493,7 +495,9 @@ local function RunDura()
 				repeat task.wait() until Raycast(Character.HumanoidRootPart.CFrame.p, Character.HumanoidRootPart.CFrame.LookVector * 10, {Character}) == true and OtherPlayerCharacter:FindFirstChild("Body Conditioning") or Values["DuraEnabled"] == false
 
 				if Player.Backpack:FindFirstChild("Combat") then
-					Character.Humanoid:EquipTool(Player.Backpack["Combat"])
+					repeat task.wait()
+						Character.Humanoid:EquipTool(Player.Backpack["Combat"])
+					until Character:FindFirstChild("Combat")	
 				end
 
 				repeat task.wait() until (returnAnimation(OtherPlayer, "13470691661") ~= nil and OtherPlayerHumanoid.WalkSpeed <= 0 and OtherPlayerCharacter:FindFirstChild("Body Conditioning")) or Values["DuraEnabled"] == false
@@ -628,7 +632,7 @@ end
 local DuraDropDown = AutofarmChan:Dropdown("Player to dura farm with", "", PlayerList, function(Value) 
 	Values["DuraSelected"] = Value
 end)
-Players.PlayerAdded	:Connect(function(OtherPlayer) DuraDropDown:Add(OtherPlayer.Name) 	end)
+Players.PlayerAdded		:Connect(function(OtherPlayer) DuraDropDown:Add(OtherPlayer.Name) 	end)
 Players.PlayerRemoving	:Connect(function(OtherPlayer) DuraDropDown:Remove(OtherPlayer.Name) end)
 
 AutofarmChan:Seperator()
