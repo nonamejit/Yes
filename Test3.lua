@@ -1,13 +1,17 @@
+if game.CoreGui:FindFirstChild("Discord") then
+	game.CoreGui:FindFirstChild("Discord"):Destroy()
+end
+
 local Players			= game:GetService("Players")
 local Replicated		= game:GetService("ReplicatedStorage")
-local ReplicatedFirst		= game:GetService("ReplicatedFirst")
-local VirtualManager		= game:GetService("VirtualInputManager")
+local ReplicatedFirst	= game:GetService("ReplicatedFirst")
+local VirtualManager	= game:GetService("VirtualInputManager")
 local VirtualUser		= game:GetService("VirtualUser")
 local TweenService		= game:GetService("TweenService")
 
 local Player			= Players.LocalPlayer
 local PlayerGui			= Player.PlayerGui
-local Event			= Replicated.Events.EventCore
+local Event				= Replicated.Events.EventCore
 
 local UILibrary 		= loadstring(game:HttpGet(("https://raw.githubusercontent.com/ErrorRat/Yes/main/Test2.lua")))()
 local MainWin			= UILibrary:Window("Asura's Demise 😈")
@@ -446,19 +450,19 @@ local function RunDura()
 
 				task.wait(1)
 
-				if Player.Backpack:FindFirstChild("Body Conditioning") then
+				if Player.Backpack:FindFirstChild("Body Conditioning") and Values["DuraEnabled"] == true then
 					repeat task.wait()
 						Humanoid:EquipTool(Player.Backpack["Body Conditioning"])
-					until Character:FindFirstChild("Body Conditioning")	
+					until Character:FindFirstChild("Body Conditioning")	or Values["DuraEnabled"] == false
 				end
 
-				repeat task.wait() until (OtherPlayerCharacter:FindFirstChildOfClass("Tool") and OtherPlayerCharacter:FindFirstChildOfClass("Tool").Name == "Combat")
+				repeat task.wait() until (OtherPlayerCharacter:FindFirstChildOfClass("Tool") and OtherPlayerCharacter:FindFirstChildOfClass("Tool").Name == "Combat") or Values["DuraEnabled"] == false
 
 				if Character:FindFirstChild("Body Conditioning") and Values["DuraEnabled"] == true then
 					if returnAnimation(Player, "13470691661") == nil then
 						Character:FindFirstChild("Body Conditioning"):Activate()
 
-						if returnAnimation(Player, "13470691661") == nil and OtherPlayerHumanoid.WalkSpeed < 0 then
+						if returnAnimation(Player, "13470691661") == nil and Humanoid.WalkSpeed > 0 then
 							Character:FindFirstChild("Body Conditioning"):Activate()
 						end
 					end
@@ -478,7 +482,7 @@ local function RunDura()
 
 				if Values["DuraEnabled"] == true then
 					local S, F = pcall(function()
-						DuraBoolValue = false
+						DuraBoolValue = not DuraBoolValue
 						RunDura()
 					end)
 
@@ -494,10 +498,10 @@ local function RunDura()
 
 				repeat task.wait() until Raycast(Character.HumanoidRootPart.CFrame.p, Character.HumanoidRootPart.CFrame.LookVector * 10, {Character}) == true and OtherPlayerCharacter:FindFirstChild("Body Conditioning") or Values["DuraEnabled"] == false
 
-				if Player.Backpack:FindFirstChild("Combat") then
+				if Player.Backpack:FindFirstChild("Combat") and Values["DuraEnabled"] == true then
 					repeat task.wait()
 						Character.Humanoid:EquipTool(Player.Backpack["Combat"])
-					until Character:FindFirstChild("Combat")	
+					until Character:FindFirstChild("Combat") or Values["DuraEnabled"] == false 
 				end
 
 				repeat task.wait() until (returnAnimation(OtherPlayer, "13470691661") ~= nil and OtherPlayerHumanoid.WalkSpeed <= 0 and OtherPlayerCharacter:FindFirstChild("Body Conditioning")) or Values["DuraEnabled"] == false
@@ -512,7 +516,9 @@ local function RunDura()
 							C:Disconnect();
 						end)
 
-						Player.Character["Combat"]:Activate()
+						task.spawn(function() 
+							Punch()
+						end)
 						repeat task.wait() until StartingHealth ~= OtherPlayerHumanoid.Health or Values["DuraEnabled"] == false
 					end
 
@@ -532,7 +538,7 @@ local function RunDura()
 
 					if Values["DuraEnabled"] == true then
 						local S, F = pcall(function()
-							DuraBoolValue = true
+							DuraBoolValue = not DuraBoolValue
 							RunDura()
 						end)
 
@@ -611,9 +617,10 @@ AutofarmChan:Seperator()
 
 AutofarmChan:Toggle("Dura Training", false, function(Value) 
 	Values["DuraEnabled"] 	= Value
-	DuraBoolValue			= Values["DuraStarting"]
 
 	if Value == true then
+		DuraBoolValue			= Values["DuraStarting"]
+
 		local S, F = pcall(function()
 			RunDura()
 		end)
@@ -639,7 +646,6 @@ AutofarmChan:Seperator()
 
 AutofarmChan:Toggle("Starting dura hit", false, function(Value) 
 	Values["DuraStarting"] 	= Value
-	DuraBoolValue			= Value
 end)
 
 AutofarmChan:Label("Whoever is doing the hitting set it to false! \nIt going to be true for the other person!")
@@ -682,6 +688,10 @@ MiscChan:Toggle("Disable on gangbase vault being attacked", false, function(Valu
 end)
 MiscChan:Label("Disable's everything apon the gang base vault being \nattacked")
 MiscChan:Label("Not needed if u have gang base door being attacked on \n(MUST OWN GANGBASE)")
+
+MiscChan:Slider("Disable when vault at health", 1, 100, 10, function(Value) 
+	Values["VaultHealth"] = Value * 0.01
+end) 
 
 MiscChan:Seperator()
 
@@ -788,7 +798,7 @@ end
 local function fireVault()
 	local V = PlayerGui.VaultHealth.Bar.Fill.Size.X.Scale
 
-	if (game.Workspace.GangBase.Outside.BillboardGui.Label.Text == "You need 10 players in the server for gang bases!" or V ~= 1) and Player:IsInGroup(tonumber(game.Workspace.GangBase:GetAttribute("BaseOwner"))) and Values["DisableVaultDoor"] == true then
+	if (game.Workspace.GangBase.Outside.BillboardGui.Label.Text == "You need 10 players in the server for gang bases!" or V <= Values["VaultHealth"]) and Player:IsInGroup(tonumber(game.Workspace.GangBase:GetAttribute("BaseOwner"))) and Values["DisableVaultDoor"] == true then
 		Values["PunchingBagsEnabled"] 	= false
 		Values["ToolEnabled"]			= false
 		Values["ThreadmilEnabled"]		= false
@@ -811,7 +821,7 @@ task.spawn(function()
 end)
 
 PlayerGui.InCombat.CanvasGroup:GetPropertyChangedSignal("GroupTransparency"):Connect(function(V)
-	if V ~= 1 and Values["DisableOnHit"] == true then
+	if V ~= 1 and Values["DisableOnHit"] == true and Player.Character.Humanoid.Health < Player.Character.Humanoid.MaxHealth then
 		Values["PunchingBagsEnabled"] 	= false
 		Values["ToolEnabled"]			= false
 		Values["ThreadmilEnabled"]		= false
