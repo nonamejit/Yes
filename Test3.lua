@@ -100,27 +100,6 @@ local function GetClosestTreadmil(Distance)
 	return closestPurchase
 end
 
-local function returnAnimation(PlayerInstance, AnimationId)
-	if PlayerInstance then
-		if PlayerInstance.Character then
-			local Character = PlayerInstance.Character
-			if Character:FindFirstChildOfClass("Humanoid") then
-				if Character.Humanoid:FindFirstChildOfClass("Animator") then
-					for i, animationtracks in pairs(Character.Humanoid.Animator:GetPlayingAnimationTracks()) do
-						if animationtracks:IsA("AnimationTrack") then
-							if animationtracks.Animation and tostring(animationtracks.Animation.AnimationId) and string.match(tostring(animationtracks.Animation.AnimationId), AnimationId) then
-								return animationtracks
-							end
-						end
-					end
-				end
-			end
-		end
-	end
-
-	return nil
-end
-
 local function Raycast(Position, Direction, Ignore)
 	local ray		= Ray.new(Position, Direction)
 
@@ -471,10 +450,17 @@ local function RunDura()
 				end
 
 				repeat task.wait() until (not Character:FindFirstChild("Body Conditioning") and Player.Character.Humanoid.WalkSpeed == 16) or not OtherPlayerCharacter:FindFirstChild("Combat") or Values["DuraEnabled"] == false
+				if Player.Character.Humanoid.WalkSpeed == 16 then
+					Player.Character.Humanoid.WalkSpeed = 0
+				end
 				
 				if (Character:FindFirstChild("Body Conditioning") and Player.Character.Humanoid.WalkSpeed <= 1) then
 					task.wait(1)
 					Character:FindFirstChild("Body Conditioning"):Activate()
+				end
+				
+				if Player.Character.Humanoid.WalkSpeed == 0 then
+					Player.Character.Humanoid.WalkSpeed = 16
 				end
 
 				if Character:FindFirstChildOfClass("Tool") then
@@ -510,7 +496,7 @@ local function RunDura()
 				repeat task.wait() until (OtherPlayerHumanoid and OtherPlayerHumanoid.WalkSpeed ~= 16 and OtherPlayerCharacter:FindFirstChild("Body Conditioning")) or Values["DuraEnabled"] == false
 
 				if Player.Character:FindFirstChild("Combat") then
-					local StartingHealth = OtherPlayerHumanoid.Health
+					local StartingHealth 	= OtherPlayerHumanoid.Health
 					
 					if Values["DuraEnabled"] == true then
 						local C = nil; C = OtherPlayerHumanoid.HealthChanged:Connect(function(H) 
