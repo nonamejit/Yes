@@ -440,10 +440,11 @@ local function RunDura()
 						repeat task.wait() until GetClosestPurchase("Body Conditioning", 25) ~= nil or Values["DuraEnabled"] == false	
 						closestPurchase = GetClosestPurchase("Body Conditioning", 25)
 						fireclickdetector(closestPurchase.ClickDetector)
-					end					
+					end
 				end
 
-				if Player.Backpack:FindFirstChild("Body Conditioning") and Values["DuraEnabled"] == true then
+				if Values["DuraEnabled"] == true then
+					repeat task.wait() until Player.Backpack:FindFirstChild("Body Conditioning") 
 					repeat task.wait()
 						Humanoid:EquipTool(Player.Backpack["Body Conditioning"])
 					until Character:FindFirstChild("Body Conditioning")	or Values["DuraEnabled"] == false
@@ -627,15 +628,13 @@ AutofarmChan:Toggle("Dura Training", false, function(Value)
 		if OtherPlayer then
 			if OtherPlayer.Character then
 				if OtherPlayer.Character:FindFirstChild("Body Conditioning") then
-					DuraBoolValue = true
-				elseif not OtherPlayer.Character:FindFirstChild("Body Conditioning") then
 					DuraBoolValue = false
+				elseif not OtherPlayer.Character:FindFirstChild("Body Conditioning") then
+					DuraBoolValue = true
 				end
 			end
 		end
 		
-		--DuraBoolValue			= Values["DuraStarting"]
-
 		local S, F = pcall(function()
 			RunDura()
 		end)
@@ -656,16 +655,6 @@ local DuraDropDown = AutofarmChan:Dropdown("Player to dura farm with", "", Playe
 end)
 Players.PlayerAdded		:Connect(function(OtherPlayer) DuraDropDown:Add(OtherPlayer.Name) 	end)
 Players.PlayerRemoving	:Connect(function(OtherPlayer) DuraDropDown:Remove(OtherPlayer.Name) end)
-
-AutofarmChan:Seperator()
-
---AutofarmChan:Toggle("Starting dura hit", false, function(Value) 
---	Values["DuraStarting"] 	= Value
---end)
-
-AutofarmChan:Label("Whoever is doing the hitting set it to false! \nIt going to be true for the other person!")
-
-AutofarmChan:Seperator()
 
 local MiscChan			= MainSer:Channel("Miscellaneous")
 MiscChan:Toggle("Auto eat", false, function(Value) 
