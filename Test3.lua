@@ -395,10 +395,6 @@ local function RunDura()
 				
 				repeat task.wait() until (Player.Character.HumanoidRootPart.Position - OtherPlayer.Character.HumanoidRootPart.Position).Magnitude < 10 or Values["DuraEnabled"] == false
 				repeat task.wait() until (OtherPlayer.Character:FindFirstChildOfClass("Tool") and OtherPlayer.Character:FindFirstChildOfClass("Tool").Name == "Combat") or Values["DuraEnabled"] == false
-				
-				if Player.Character.Humanoid.Health < Player.Character.Humanoid.MaxHealth and Values["DuraEnabled"] == true then
-					repeat task.wait() until Player.Character.Humanoid.Health >= Player.Character.Humanoid.MaxHealth or Values["DuraEnabled"] == false
-				end
 
 				repeat task.wait(0.4)
 					if Player.Character.Humanoid.WalkSpeed > 1 and Player.Character:FindFirstChild("Body Conditioning") and Values["DuraEnabled"] == true then
@@ -417,6 +413,10 @@ local function RunDura()
 
 				if Player.Character.Humanoid.WalkSpeed == 0 and Values["DuraEnabled"] == true then
 					Player.Character.Humanoid.WalkSpeed = 16
+				end
+				
+				if OtherPlayer.Character.Humanoid.Health < OtherPlayer.Character.Humanoid.MaxHealth and Values["DuraEnabled"] == true then
+					repeat task.wait() until OtherPlayer.Character.Humanoid.Health >= OtherPlayer.Character.Humanoid.MaxHealth or Values["DuraEnabled"] == false
 				end
 			elseif DuraBoolValue == false then
 				repeat task.wait() until ((Player.Character.HumanoidRootPart.Position - OtherPlayer.Character.HumanoidRootPart.Position).Magnitude < 10 and OtherPlayer.Character:FindFirstChild("Body Conditioning")) or Values["DuraEnabled"] == false
@@ -443,6 +443,10 @@ local function RunDura()
 						end
 					end
 				until ((OtherPlayer.Character.Humanoid.Health - StartingHealth) <= StartingHealth and OtherPlayer.Character:FindFirstChild("Body Conditioning")) or (not OtherPlayer.Character:FindFirstChild("Body Conditioning")) or Values["DuraEnabled"] == false
+				
+				if Player.Character.Humanoid.Health < Player.Character.Humanoid.MaxHealth and Values["DuraEnabled"] == true then
+					repeat task.wait() until Player.Character.Humanoid.Health >= Player.Character.Humanoid.MaxHealth or Values["DuraEnabled"] == false
+				end
 			end
 			
 			Player.Character.Humanoid:UnequipTools()
