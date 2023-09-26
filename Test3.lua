@@ -118,12 +118,8 @@ end
 
 local CanPunch	= false
 local function Punch()
-	if CanPunch == false and Player.Character and Player.Character:FindFirstChild("Combat") then
+	if Player.Character.Humanoid.WalkSpeed > 4 and Player.Character and Player.Character:FindFirstChild("Combat") then
 		Player.Character["Combat"]:Activate()
-		CanPunch = true
-		repeat task.wait() until Player.Character.Humanoid.WalkSpeed <= 4 or Values["DuraEnabled"] == false or Values["PunchingBagsEnabled"] == false or Values["ToolEnabled"] == false or Values["ThreadmilEnabled"] == false
-		repeat task.wait() until Player.Character.Humanoid.WalkSpeed == 16 or Values["DuraEnabled"] == false or Values["PunchingBagsEnabled"] == false or Values["ToolEnabled"] == false or Values["ThreadmilEnabled"] == false
-		CanPunch = false
 	end
 end
 
@@ -407,7 +403,7 @@ local function RunDura()
 				end
 
 				if Values["DuraEnabled"] == true then
-					repeat task.wait() until Player.Backpack:FindFirstChild("Body Conditioning") 
+					repeat task.wait() until Player.Backpack:FindFirstChild("Body Conditioning") or Values["DuraEnabled"] == false
 					repeat task.wait()
 						Humanoid:EquipTool(Player.Backpack["Body Conditioning"])
 					until Character:FindFirstChild("Body Conditioning")	or Values["DuraEnabled"] == false
@@ -427,7 +423,7 @@ local function RunDura()
 						
 						task.wait(0.5)
 						
-						if Player.Character.Humanoid.WalkSpeed == 16 then
+						if Player.Character.Humanoid.WalkSpeed == 16 and Values["DuraEnabled"] == true then
 							Character:FindFirstChild("Body Conditioning"):Activate()
 						end
 					end
@@ -438,7 +434,7 @@ local function RunDura()
 					Player.Character.Humanoid.WalkSpeed = 0
 				end
 				
-				if (Character:FindFirstChild("Body Conditioning") and Player.Character.Humanoid.WalkSpeed <= 1) then
+				if (Character:FindFirstChild("Body Conditioning") and Player.Character.Humanoid.WalkSpeed <= 1 and Values["DuraEnabled"] == true) then
 					task.wait(1)
 					Character:FindFirstChild("Body Conditioning"):Activate()
 				end
