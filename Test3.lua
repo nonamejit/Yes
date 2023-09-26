@@ -4,8 +4,8 @@ end
 
 local Players			= game:GetService("Players")
 local Replicated		= game:GetService("ReplicatedStorage")
-local ReplicatedFirst	= game:GetService("ReplicatedFirst")
-local VirtualManager	= game:GetService("VirtualInputManager")
+local ReplicatedFirst		= game:GetService("ReplicatedFirst")
+local VirtualManager		= game:GetService("VirtualInputManager")
 local VirtualUser		= game:GetService("VirtualUser")
 local TweenService		= game:GetService("TweenService")
 
@@ -403,9 +403,10 @@ local function RunDura()
 				end
 
 				if Values["DuraEnabled"] == true then
-					repeat task.wait() until Player.Backpack:FindFirstChild("Body Conditioning") or Values["DuraEnabled"] == false
 					repeat task.wait()
-						Humanoid:EquipTool(Player.Backpack["Body Conditioning"])
+						if Player.Backpack:FindFirstChild("Body Conditioning") then
+							Humanoid:EquipTool(Player.Backpack["Body Conditioning"])
+						end
 					until Character:FindFirstChild("Body Conditioning")	or Values["DuraEnabled"] == false
 				end
 				
