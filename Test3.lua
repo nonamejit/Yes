@@ -117,15 +117,28 @@ local function Raycast(Position, Direction, Ignore)
 end
 
 local CanPunch	= false
-
-local function getCanPunch()
-	if not (Player.Character and Player.Character:FindFirstChild('Humanoid')) then return; end
-	return (Player.Character.Humanoid.WalkSpeed <= 4 and true) or false
-end
-
 local function Punch()
-	if getCanPunch() == false and not (Values['DuraEnabled'] or Values['PunchingBagsEnabled'] or Values['ToolEnabled'] or Values['ThreadmilEnabled']) and Player.Character and Player.Character:FindFirstChild("Combat") then
-		Player.Character.Combat:Activate()
+	if CanPunch == false and Player.Character and Player.Character:FindFirstChild("Combat") then        
+		local C; C = Player.Character.Humanoid:GetPropertyChangedSignal("WalkSpeed"):Connect(function() 
+			local V = Player.Character.Humanoid.WalkSpeed
+			if V then
+				if V == 2 or V == 4 then
+					CanPunch = true
+				elseif V > 4 then
+					CanPunch = false
+				end
+			end
+		end)
+
+		if Player.Character:FindFirstChild("Combat") then
+			Player.Character["Combat"]:Activate()
+		end
+
+		repeat task.wait() until CanPunch == false or Values["DuraEnabled"] == false or Values["PunchingBagsEnabled"] == false or Values["ToolEnabled"] == false or Values["ThreadmilEnabled"] == false
+
+		CanPunch = false
+		C:Disconnect()
+		C = nil
 	end
 end
 
