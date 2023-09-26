@@ -215,6 +215,7 @@ local function RunPunchingBags()
 									elseif Hits == 5 then
 										Event:FireServer(unpack({[1] = "M2"})); Hits = 0
 									end
+									
 									if PlayerGui.Main.HUD.Stamina.Clipping.Size.X.Scale <= Values["StaminaValue"] and HoldOffConnection == false then
 										HoldOffConnection = true
 										if Values["PunchingRegenStam"] == true and HoldOffConnection == true and PlayerGui:FindFirstChildOfClass("BillboardGui") then
@@ -228,6 +229,7 @@ local function RunPunchingBags()
 							until not PlayerGui:FindFirstChildOfClass("BillboardGui") or not Character:FindFirstChild("Gloves") or Values["PunchingBagsEnabled"] == false
 
 							if HoldOffConnection == true then
+								print("Fired")
 								repeat task.wait() until PlayerGui.Main.HUD.Stamina.Clipping.Size.X.Scale >= 1 or Values["PunchingBagsEnabled"] == false
 							end
 						end
@@ -394,7 +396,7 @@ local function RunDura()
 					until Character:FindFirstChild("Body Conditioning")	or Values["DuraEnabled"] == false
 				end
 				
-				repeat task.wait() until (Character.HumanoidRootPart.Position - OtherPlayerCharacter.HumanoidRootPart.Position).Mangitude < 10 or Values["DuraEnabled"] == false
+				repeat task.wait() until (Character.HumanoidRootPart.Position - OtherPlayerCharacter.HumanoidRootPart.Position).Magnitude < 10 or Values["DuraEnabled"] == false
 				
 				if Humanoid.Health < Humanoid.MaxHealth then
 					repeat task.wait() until Humanoid.Health >= Humanoid.MaxHealth or Values["DuraEnabled"] == false
@@ -445,7 +447,7 @@ local function RunDura()
 					repeat task.wait() until OtherPlayerHumanoid.Health >= OtherPlayerHumanoid.MaxHealth or Values["DuraEnabled"] == false
 				end
 
-				repeat task.wait() until (Character.HumanoidRootPart.Position - OtherPlayerCharacter.HumanoidRootPart.Position).Mangitude < 10 and OtherPlayerCharacter:FindFirstChild("Body Conditioning") or Values["DuraEnabled"] == false
+				repeat task.wait() until (Character.HumanoidRootPart.Position - OtherPlayerCharacter.HumanoidRootPart.Position).Magnitude < 10 and OtherPlayerCharacter:FindFirstChild("Body Conditioning") or Values["DuraEnabled"] == false
 
 				if Player.Backpack:FindFirstChild("Combat") and Values["DuraEnabled"] == true then
 					repeat task.wait()
