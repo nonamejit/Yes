@@ -385,13 +385,11 @@ local function RunDura()
 					end
 				end
 
-				if Values["DuraEnabled"] == true then
-					repeat task.wait()
-						if Player.Backpack:FindFirstChild("Body Conditioning") then
-							Player.Character.Humanoid:EquipTool(Player.Backpack:FindFirstChild("Body Conditioning"))
-						end
-					until Player.Character:FindFirstChild("Body Conditioning")	or Values["DuraEnabled"] == false
-				end
+				repeat task.wait()
+					if Player.Backpack:FindFirstChild("Body Conditioning") then
+						Player.Character.Humanoid:EquipTool(Player.Backpack:FindFirstChild("Body Conditioning"))
+					end
+				until Player.Character:FindFirstChild("Body Conditioning") or Values["DuraEnabled"] == false
 				
 				repeat task.wait() until (Character.HumanoidRootPart.Position - OtherPlayerCharacter.HumanoidRootPart.Position).Magnitude < 10 or Values["DuraEnabled"] == false
 				
