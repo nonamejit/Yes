@@ -100,22 +100,6 @@ local function GetClosestTreadmil(Distance)
 	return closestPurchase
 end
 
-local function Raycast(Position, Direction, Ignore)
-	local ray		= Ray.new(Position, Direction)
-
-	local Hit		= game.Workspace:FindPartOnRayWithIgnoreList(ray, Ignore)
-
-	if Hit then
-		if Hit.Parent and Hit.Parent:FindFirstChildOfClass("Humanoid") and Players:FindFirstChild(Hit.Parent.Name) then
-			if Hit.Parent.Name == Values["DuraSelected"] then
-				return true
-			end
-		end
-	end
-
-	return false
-end
-
 local CanPunch	= false
 local function Punch()
 	if Player.Character.Humanoid.WalkSpeed > 10 and Player.Character and Player.Character:FindFirstChild("Combat") then
@@ -410,7 +394,7 @@ local function RunDura()
 					until Character:FindFirstChild("Body Conditioning")	or Values["DuraEnabled"] == false
 				end
 				
-				repeat task.wait() until Raycast(Character.HumanoidRootPart.CFrame.p, Character.HumanoidRootPart.CFrame.LookVector * 10, {Character}) == true or Values["DuraEnabled"] == false
+				repeat task.wait() until (Character.HumanoidRootPart.Position - OtherPlayerCharacter.HumanoidRootPart.Position).Mangitude < 10 or Values["DuraEnabled"] == false
 				
 				if Humanoid.Health < Humanoid.MaxHealth then
 					repeat task.wait() until Humanoid.Health >= Humanoid.MaxHealth or Values["DuraEnabled"] == false
@@ -461,7 +445,7 @@ local function RunDura()
 					repeat task.wait() until OtherPlayerHumanoid.Health >= OtherPlayerHumanoid.MaxHealth or Values["DuraEnabled"] == false
 				end
 
-				repeat task.wait() until Raycast(Character.HumanoidRootPart.CFrame.p, Character.HumanoidRootPart.CFrame.LookVector * 10, {Character}) == true and OtherPlayerCharacter:FindFirstChild("Body Conditioning") or Values["DuraEnabled"] == false
+				repeat task.wait() until (Character.HumanoidRootPart.Position - OtherPlayerCharacter.HumanoidRootPart.Position).Mangitude < 10 and OtherPlayerCharacter:FindFirstChild("Body Conditioning") or Values["DuraEnabled"] == false
 
 				if Player.Backpack:FindFirstChild("Combat") and Values["DuraEnabled"] == true then
 					repeat task.wait()
