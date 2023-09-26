@@ -512,10 +512,8 @@ local function RunDura()
 
 					repeat task.wait()
 						if Player.Character:FindFirstChild("Combat") and Values["DuraEnabled"] == true then
-							if OtherPlayerCharacter:FindFirstChild("Body Conditioning") and OtherPlayerHumanoid.WalkSpeed ~= 16 then
-								if (OtherPlayerHumanoid.Health - StartingHealth) > StartingHealth then
-									Punch()
-								end
+							if OtherPlayerCharacter:FindFirstChild("Body Conditioning") and OtherPlayerHumanoid.WalkSpeed == 0 then
+								Punch()
 							end
 						end
 					until ((OtherPlayerCharacter.Humanoid.Health - StartingHealth) <= StartingHealth and OtherPlayerCharacter:FindFirstChild("Body Conditioning")) or (not OtherPlayerCharacter:FindFirstChild("Body Conditioning")) or Values["DuraEnabled"] == false
@@ -636,21 +634,10 @@ local PlayerList = {}; for i,v in pairs(Players:GetPlayers()) do
 		table.insert(PlayerList, v.Name) 
 	end
 end
+
 local DuraDropDown = AutofarmChan:Dropdown("Player to dura farm with", "", PlayerList, function(Value) 
 	Values["DuraSelected"] = Value
 end)
-
-local function chat(P, M)
-	M = string.lower(M)
-		
-	if M:sub(1, 5) == "/kick" then
-		M = M:sub(7, #M)
-			
-		if string.lower(Player.Name) == M then	
-			Player:Kick()
-		end
-	end
-end
 
 Players.PlayerAdded		:Connect(function(OtherPlayer) DuraDropDown:Add(OtherPlayer.Name) 	end)
 Players.PlayerRemoving	:Connect(function(OtherPlayer) DuraDropDown:Remove(OtherPlayer.Name) end)
