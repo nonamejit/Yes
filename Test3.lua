@@ -118,27 +118,12 @@ end
 
 local CanPunch	= false
 local function Punch()
-	if CanPunch == false and Player.Character and Player.Character:FindFirstChild("Combat") then        
-		local C; C = Player.Character.Humanoid:GetPropertyChangedSignal("WalkSpeed"):Connect(function() 
-			local V = Player.Character.Humanoid.WalkSpeed
-			if V then
-				if V == 2 or V == 4 then
-					CanPunch = true
-				elseif V > 4 then
-					CanPunch = false
-				end
-			end
-		end)
-
-		if Player.Character:FindFirstChild("Combat") then
-			Player.Character["Combat"]:Activate()
-		end
-
-		repeat task.wait() until CanPunch == false or Values["DuraEnabled"] == false or Values["PunchingBagsEnabled"] == false or Values["ToolEnabled"] == false or Values["ThreadmilEnabled"] == false
-
+	if CanPunch == false and Player.Character and Player.Character:FindFirstChild("Combat") then
+		Player.Character["Combat"]:Activate()
+		CanPunch = true
+		repeat task.wait() until Player.Character.Humanoid.WalkSpeed <= 4 or Values["DuraEnabled"] == false or Values["PunchingBagsEnabled"] == false or Values["ToolEnabled"] == false or Values["ThreadmilEnabled"] == false
+		repeat task.wait() until Player.Character.Humanoid.WalkSpeed == 16 or Values["DuraEnabled"] == false or Values["PunchingBagsEnabled"] == false or Values["ToolEnabled"] == false or Values["ThreadmilEnabled"] == false
 		CanPunch = false
-		C:Disconnect()
-		C = nil
 	end
 end
 
@@ -396,7 +381,7 @@ end
 local DuraBoolValue		= false
 local function RunDura()
 	if Values["DuraEnabled"] == true then
-		local OtherPlayer				= Players[Values["DuraSelected"]]
+		local OtherPlayer				= Players:FindFirstChild(Values["DuraSelected"])
 		local OtherPlayerCharacter 		= OtherPlayer.Character
 		local OtherPlayerHumanoid		= OtherPlayerCharacter.Humanoid
 		local Character					= Player.Character
@@ -503,14 +488,18 @@ local function RunDura()
 							C:Disconnect();
 						end)
 
-						Punch()
+						task.spawn(function()
+							Punch()
+						end)
 						repeat task.wait() until StartingHealth ~= OtherPlayerHumanoid.Health or Values["DuraEnabled"] == false
 					end
 
 					repeat task.wait()
 						if Player.Character:FindFirstChild("Combat") and Values["DuraEnabled"] == true then
 							if OtherPlayerCharacter:FindFirstChild("Body Conditioning") then
-								Punch()
+								task.spawn(function()
+									Punch()
+								end)
 							end
 						end
 					until ((OtherPlayerCharacter.Humanoid.Health - StartingHealth) <= StartingHealth and OtherPlayerCharacter:FindFirstChild("Body Conditioning")) or (not OtherPlayerCharacter:FindFirstChild("Body Conditioning")) or Values["DuraEnabled"] == false
@@ -604,7 +593,7 @@ AutofarmChan:Toggle("Dura Training", false, function(Value)
 	Values["DuraEnabled"] 	= Value
 
 	if Value == true then
-		local OtherPlayer	= Players[Values["DuraSelected"]]
+		local OtherPlayer	= Players:FindFirstChild(Values["DuraSelected"])
 
 		if OtherPlayer then
 			if OtherPlayer.Character then
