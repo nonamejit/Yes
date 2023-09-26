@@ -4,8 +4,8 @@ end
 
 local Players			= game:GetService("Players")
 local Replicated		= game:GetService("ReplicatedStorage")
-local ReplicatedFirst		= game:GetService("ReplicatedFirst")
-local VirtualManager		= game:GetService("VirtualInputManager")
+local ReplicatedFirst	= game:GetService("ReplicatedFirst")
+local VirtualManager	= game:GetService("VirtualInputManager")
 local VirtualUser		= game:GetService("VirtualUser")
 local TweenService		= game:GetService("TweenService")
 
@@ -118,7 +118,7 @@ end
 
 local CanPunch	= false
 local function Punch()
-	if Player.Character.Humanoid.WalkSpeed > 4 and Player.Character and Player.Character:FindFirstChild("Combat") then
+	if Player.Character.Humanoid.WalkSpeed > 10 and Player.Character and Player.Character:FindFirstChild("Combat") then
 		Player.Character["Combat"]:Activate()
 	end
 end
@@ -417,25 +417,20 @@ local function RunDura()
 				end
 				
 				repeat task.wait() until (OtherPlayerCharacter:FindFirstChildOfClass("Tool") and OtherPlayerCharacter:FindFirstChildOfClass("Tool").Name == "Combat") or Values["DuraEnabled"] == false
-
+				
+				local DefaultWalkSpeed = Player.Character.Humanoid.WalkSpeed
 				if Character:FindFirstChild("Body Conditioning") and Values["DuraEnabled"] == true then
-					if Player.Character.Humanoid.WalkSpeed == 16 then
+					if Player.Character.Humanoid.WalkSpeed == DefaultWalkSpeed then
 						Character:FindFirstChild("Body Conditioning"):Activate()
-						
-						task.wait(0.5)
-						
-						if Player.Character.Humanoid.WalkSpeed == 16 and Values["DuraEnabled"] == true then
-							Character:FindFirstChild("Body Conditioning"):Activate()
-						end
 					end
 				end
 
 				repeat task.wait() until not Character:FindFirstChild("Body Conditioning") or not OtherPlayerCharacter:FindFirstChild("Combat") or Values["DuraEnabled"] == false
-				if Player.Character.Humanoid.WalkSpeed == 16 then
+				if Player.Character.Humanoid.WalkSpeed == DefaultWalkSpeed then
 					Player.Character.Humanoid.WalkSpeed = 0
 				end
 				
-				if (Character:FindFirstChild("Body Conditioning") and Player.Character.Humanoid.WalkSpeed <= 1 and Values["DuraEnabled"] == true) then
+				if (Character:FindFirstChild("Body Conditioning") and Player.Character.Humanoid.WalkSpeed ~= DefaultWalkSpeed and Values["DuraEnabled"] == true) then
 					task.wait(1)
 					Character:FindFirstChild("Body Conditioning"):Activate()
 				end
@@ -473,8 +468,9 @@ local function RunDura()
 						Character.Humanoid:EquipTool(Player.Backpack["Combat"])
 					until Character:FindFirstChild("Combat") or Values["DuraEnabled"] == false 
 				end
-
-				repeat task.wait() until (OtherPlayerHumanoid and OtherPlayerHumanoid.WalkSpeed ~= 16 and OtherPlayerCharacter:FindFirstChild("Body Conditioning")) or Values["DuraEnabled"] == false
+				
+				local DeafultSpeed = OtherPlayerHumanoid.WalkSpeed
+				repeat task.wait() until (OtherPlayerHumanoid and OtherPlayerHumanoid.WalkSpeed ~= DeafultSpeed and OtherPlayerCharacter:FindFirstChild("Body Conditioning")) or Values["DuraEnabled"] == false
 
 				if Player.Character:FindFirstChild("Combat") then
 					local StartingHealth 	= OtherPlayerHumanoid.Health
