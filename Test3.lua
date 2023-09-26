@@ -421,7 +421,6 @@ local function RunDura()
 					Player.Character.Humanoid.WalkSpeed = 16
 				end
 			elseif DuraBoolValue == false then
-				repeat task.wait() until OtherPlayer.Character.Humanoid.Health >= OtherPlayer.Character.Humanoid.MaxHealth or Values["DuraEnabled"] == false
 				repeat task.wait() until ((Player.Character.HumanoidRootPart.Position - OtherPlayer.Character.HumanoidRootPart.Position).Magnitude < 10 and OtherPlayer.Character:FindFirstChild("Body Conditioning")) or Values["DuraEnabled"] == false
 				
 				repeat task.wait()
