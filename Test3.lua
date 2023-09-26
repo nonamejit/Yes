@@ -456,6 +456,8 @@ local function RunDura()
 				
 				local DeafultSpeed = OtherPlayerHumanoid.WalkSpeed
 				repeat task.wait() until (OtherPlayerHumanoid and OtherPlayerHumanoid.WalkSpeed ~= DeafultSpeed and OtherPlayerCharacter:FindFirstChild("Body Conditioning")) or Values["DuraEnabled"] == false
+				
+				task.wait(1)
 
 				if Player.Character:FindFirstChild("Combat") then
 					local StartingHealth 	= OtherPlayerHumanoid.Health
