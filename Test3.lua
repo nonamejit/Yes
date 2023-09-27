@@ -102,11 +102,29 @@ end
 
 local CanPunch	= false
 local function Punch()
-	if Player.Character.Humanoid.WalkSpeed > 10 and Player.Character and Player.Character:FindFirstChild("Combat") then
-		Player.Character["Combat"]:Activate()
+	if CanPunch == false and Player.Character and Player.Character:FindFirstChild("Combat") then        
+		local C; C = Player.Character.Humanoid:GetPropertyChangedSignal("WalkSpeed"):Connect(function() 
+			local V = Player.Character.Humanoid.WalkSpeed
+			if V then
+				if V <= 4 then
+					CanPunch = true
+				elseif V > 4 then
+					CanPunch = false
+				end
+			end
+		end)
+
+		if Player.Character:FindFirstChild("Combat") then
+			Player.Character["Combat"]:Activate()
+		end
+
+		repeat task.wait() until CanPunch == false or Values["DuraEnabled"] == false or Values["PunchingBagsEnabled"] == false or Values["ToolEnabled"] == false or Values["ThreadmilEnabled"] == false
+
+		CanPunch = false
+		C:Disconnect()
+		C = nil
 	end
 end
-
 local function RunPunchingBags()
 	local Character			= Player.Character
 	local Humanoid			= Character.Humanoid
@@ -406,8 +424,10 @@ local function RunDura()
 				
 				if Player.Character:FindFirstChild("Body Conditioning") then
 					task.wait(1)
-					Player.Character:FindFirstChild("Body Conditioning"):Activate()
-				elseif  Player.Character.Humanoid.WalkSpeed > 0 and Values["DuraEnabled"] == true then
+					if Player.Character:FindFirstChild("Body Conditioning") then
+						Player.Character:FindFirstChild("Body Conditioning"):Activate()
+					end
+				elseif not Player.Character:FindFirstChild("Body Conditioning") and Values["DuraEnabled"] == true then
 					Player.Character.Humanoid.WalkSpeed = 0					
 				end
 
@@ -431,7 +451,9 @@ local function RunDura()
 				
 				local StartingHealth 	= OtherPlayer.Character.Humanoid.Health
 				if Values["DuraEnabled"] == true then
-					Punch()
+					task.spawn(function()
+						Punch()
+					end)
 				end
 				repeat task.wait() until OtherPlayer.Character.Humanoid.Health ~= StartingHealth
 				StartingHealth = StartingHealth - OtherPlayer.Character.Humanoid.Health
