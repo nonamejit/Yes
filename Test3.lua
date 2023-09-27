@@ -409,11 +409,12 @@ local function RunDura()
 					Player.Character.Humanoid.WalkSpeed = 0
 				end
 				
-				if Player.Character:FindFirstChild("Body Conditioning") and Player.Character.Humanoid.WalkSpeed == 0 then
-					task.wait(1)
-					if Player.Character:FindFirstChild("Body Conditioning") and Player.Character.Humanoid.WalkSpeed == 0 then
-						Player.Character:FindFirstChild("Body Conditioning"):Activate()
-					end
+				if Player.Character:FindFirstChild("Body Conditioning") then
+					repeat task.wait(0.4)
+						if Player.Character.Humanoid.WalkSpeed <= 1 and Player.Character:FindFirstChild("Body Conditioning") and Values["DuraEnabled"] == true then
+							Player.Character:FindFirstChild("Body Conditioning"):Activate()
+						end
+					until Player.Character.Humanoid.WalkSpeed > 1 or not Player.Character:FindFirstChild("Body Conditioning") or Values["DuraEnabled"] == false
 				end
 
 				if Player.Character.Humanoid.WalkSpeed == 0 and Values["DuraEnabled"] == true then
