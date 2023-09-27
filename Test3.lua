@@ -100,31 +100,13 @@ local function GetClosestTreadmil(Distance)
 	return closestPurchase
 end
 
-local CanPunch	= false
+
 local function Punch()
-	if CanPunch == false and Player.Character and Player.Character:FindFirstChild("Combat") then        
-		local C; C = Player.Character.Humanoid:GetPropertyChangedSignal("WalkSpeed"):Connect(function() 
-			local V = Player.Character.Humanoid.WalkSpeed
-			if V then
-				if V <= 4 then
-					CanPunch = true
-				elseif V > 4 then
-					CanPunch = false
-				end
-			end
-		end)
-
-		if Player.Character:FindFirstChild("Combat") then
-			Player.Character["Combat"]:Activate()
-		end
-
-		repeat task.wait() until CanPunch == false or Values["DuraEnabled"] == false or Values["PunchingBagsEnabled"] == false or Values["ToolEnabled"] == false or Values["ThreadmilEnabled"] == false
-
-		CanPunch = false
-		C:Disconnect()
-		C = nil
-	end
+	if Player.Character.Humanoid.WalkSpeed == 16 and Player.Character and Player.Character:FindFirstChild("Combat") then
+		Player.Character["Combat"]:Activate()
+	end	
 end
+
 local function RunPunchingBags()
 	local Character			= Player.Character
 	local Humanoid			= Character.Humanoid
@@ -451,9 +433,7 @@ local function RunDura()
 				
 				local StartingHealth 	= OtherPlayer.Character.Humanoid.Health
 				if Values["DuraEnabled"] == true then
-					task.spawn(function()
-						Punch()
-					end)
+					Punch()
 				end
 				repeat task.wait() until OtherPlayer.Character.Humanoid.Health ~= StartingHealth
 				StartingHealth = StartingHealth - OtherPlayer.Character.Humanoid.Health
