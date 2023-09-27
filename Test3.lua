@@ -102,7 +102,7 @@ end
 
 
 local function Punch()
-	if Player.Character.Humanoid.WalkSpeed == 16 and Player.Character and Player.Character:FindFirstChild("Combat") then
+	if Player.Character.Humanoid.WalkSpeed > 10 and Player.Character and Player.Character:FindFirstChildOfClass("Tool") then
 		Player.Character["Combat"]:Activate()
 	end	
 end
@@ -209,7 +209,12 @@ local function RunPunchingBags()
 						if PlayerGui:FindFirstChildOfClass("BillboardGui").Adornee.Name == "Main" then
 							local HoldOffConnection = false; local Hits = 0; 
 							repeat task.wait()
-								if PlayerGui:FindFirstChildOfClass("BillboardGui") and (HoldOffConnection == false and Values["PunchingRegenStam"] == true) then
+								if (HoldOffConnection == true and Values["PunchingRegenStam"] == true) then
+									repeat task.wait() until PlayerGui.Main.HUD.Stamina.Clipping.Size.X.Scale >= 1 or Values["PunchingBagsEnabled"] == false
+									HoldOffConnection = false
+								end
+									
+								if PlayerGui:FindFirstChildOfClass("BillboardGui") and ((HoldOffConnection == false and Values["PunchingRegenStam"] == true) or Values["PunchingRegenStam"] == false) then
 									if Hits <= 4 then
 										Hits += 1; Punch()
 									elseif Hits == 5 then
@@ -218,19 +223,15 @@ local function RunPunchingBags()
 									
 									if PlayerGui.Main.HUD.Stamina.Clipping.Size.X.Scale <= Values["StaminaValue"] and HoldOffConnection == false then
 										HoldOffConnection = true
-										if Values["PunchingRegenStam"] == true and HoldOffConnection == true and PlayerGui:FindFirstChildOfClass("BillboardGui") then
-											task.spawn(function ()
-												repeat task.wait() until PlayerGui.Main.HUD.Stamina.Clipping.Size.X.Scale >= 1 or not PlayerGui:FindFirstChildOfClass("BillboardGui") or not Character:FindFirstChild("Gloves") or Values["PunchingBagsEnabled"] == false
-												HoldOffConnection = false
-											end)
-										end
 									end
 								end
 							until not PlayerGui:FindFirstChildOfClass("BillboardGui") or not Character:FindFirstChild("Gloves") or Values["PunchingBagsEnabled"] == false
 
-							if HoldOffConnection == true then
+							if HoldOffConnection == true and PlayerGui.Main.HUD.Stamina.Clipping.Size.X.Scale < 1 then
 								repeat task.wait() until PlayerGui.Main.HUD.Stamina.Clipping.Size.X.Scale >= 1 or Values["PunchingBagsEnabled"] == false
 							end
+							
+							HoldOffConnection = false
 						end
 					end
 				end
@@ -404,13 +405,15 @@ local function RunDura()
 				
 				repeat task.wait() until not (Player.Character:FindFirstChild("Body Conditioning") or OtherPlayer.Character:FindFirstChild("Combat")) or Values["DuraEnabled"] == false
 				
-				if Player.Character:FindFirstChild("Body Conditioning") then
+				if Player.Character.Humanoid.WalkSpeed == 16 and Values["DuraEnabled"] == true then
+					Player.Character.Humanoid.WalkSpeed = 0
+				end
+				
+				if Player.Character:FindFirstChild("Body Conditioning") and Player.Character.Humanoid.WalkSpeed == 0 then
 					task.wait(1)
-					if Player.Character:FindFirstChild("Body Conditioning") then
+					if Player.Character:FindFirstChild("Body Conditioning") and Player.Character.Humanoid.WalkSpeed == 0 then
 						Player.Character:FindFirstChild("Body Conditioning"):Activate()
 					end
-				elseif not Player.Character:FindFirstChild("Body Conditioning") and Values["DuraEnabled"] == true then
-					Player.Character.Humanoid.WalkSpeed = 0					
 				end
 
 				if Player.Character.Humanoid.WalkSpeed == 0 and Values["DuraEnabled"] == true then
