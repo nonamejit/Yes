@@ -213,14 +213,14 @@ local function RunPunchingBags()
 									repeat task.wait() until PlayerGui.Main.HUD.Stamina.Clipping.Size.X.Scale >= 1 or Values["PunchingBagsEnabled"] == false
 									HoldOffConnection = false
 								end
-									
+
 								if PlayerGui:FindFirstChildOfClass("BillboardGui") and ((HoldOffConnection == false and Values["PunchingRegenStam"] == true) or Values["PunchingRegenStam"] == false) then
 									if Hits <= 4 then
 										Hits += 1; Punch()
 									elseif Hits == 5 then
 										Event:FireServer(unpack({[1] = "M2"})); Hits = 0
 									end
-									
+
 									if PlayerGui.Main.HUD.Stamina.Clipping.Size.X.Scale <= Values["StaminaValue"] and HoldOffConnection == false then
 										HoldOffConnection = true
 									end
@@ -230,7 +230,7 @@ local function RunPunchingBags()
 							if HoldOffConnection == true and PlayerGui.Main.HUD.Stamina.Clipping.Size.X.Scale < 1 then
 								repeat task.wait() until PlayerGui.Main.HUD.Stamina.Clipping.Size.X.Scale >= 1 or Values["PunchingBagsEnabled"] == false
 							end
-							
+
 							HoldOffConnection = false
 						end
 					end
@@ -364,12 +364,12 @@ local DuraBoolValue		= false
 local function RunDura()
 	if Values["DuraEnabled"] == true then
 		local OtherPlayer				= Players:FindFirstChild(Values["DuraSelected"])
-		
+
 		if OtherPlayer then
 			Player.Character.Humanoid:UnequipTools()
 			if DuraBoolValue == true then
 				local closestPurchase	= GetClosestPurchase("Body Conditioning", 25)
-				
+
 				if not Player.Backpack:FindFirstChild("Body Conditioning") then
 					if closestPurchase ~= nil then
 						repeat task.wait()
@@ -387,28 +387,30 @@ local function RunDura()
 						until Player.Backpack:FindFirstChild("Body Conditioning") or Values["DuraEnabled"] == false
 					end
 				end
-				
+
 				repeat task.wait()
 					if Player.Backpack:FindFirstChild("Body Conditioning") and Values["DuraEnabled"] == true then
 						Player.Character.Humanoid:EquipTool(Player.Backpack["Body Conditioning"])
 					end
 				until Player.Character:FindFirstChild("Body Conditioning") or Values["DuraEnabled"] == false
-				
+
 				repeat task.wait() until (Player.Character.HumanoidRootPart.Position - OtherPlayer.Character.HumanoidRootPart.Position).Magnitude < 10 or Values["DuraEnabled"] == false
 				repeat task.wait() until (OtherPlayer.Character:FindFirstChildOfClass("Tool") and OtherPlayer.Character:FindFirstChildOfClass("Tool").Name == "Combat") or Values["DuraEnabled"] == false
 
-				repeat task.wait(0.4)
+				repeat task.wait(0.6)
 					if Player.Character.Humanoid.WalkSpeed > 1 and Player.Character:FindFirstChild("Body Conditioning") and Values["DuraEnabled"] == true then
 						Player.Character:FindFirstChild("Body Conditioning"):Activate()
 					end
 				until Player.Character.Humanoid.WalkSpeed <= 1 or Values["DuraEnabled"] == false
 				
+				task.wait(1)
+
 				repeat task.wait() until not (Player.Character:FindFirstChild("Body Conditioning") or OtherPlayer.Character:FindFirstChild("Combat")) or Values["DuraEnabled"] == false
-				
+
 				if Player.Character.Humanoid.WalkSpeed == 16 and Values["DuraEnabled"] == true then
 					Player.Character.Humanoid.WalkSpeed = 0
 				end
-				
+
 				if Player.Character:FindFirstChild("Body Conditioning") then
 					repeat task.wait(0.4)
 						if Player.Character.Humanoid.WalkSpeed <= 1 and Player.Character:FindFirstChild("Body Conditioning") and Values["DuraEnabled"] == true then
@@ -422,15 +424,15 @@ local function RunDura()
 				end
 			elseif DuraBoolValue == false then
 				repeat task.wait() until ((Player.Character.HumanoidRootPart.Position - OtherPlayer.Character.HumanoidRootPart.Position).Magnitude < 10 and OtherPlayer.Character:FindFirstChild("Body Conditioning")) or Values["DuraEnabled"] == false
-				
+
 				repeat task.wait()
 					if Player.Backpack:FindFirstChild("Combat") and Values["DuraEnabled"] == true then
 						Player.Character.Humanoid:EquipTool(Player.Backpack["Combat"])
 					end	
 				until Player.Character:FindFirstChild("Combat") or Values["DuraEnabled"] == false
-				
+
 				repeat task.wait() until (OtherPlayer.Character.Humanoid.WalkSpeed <= 1 and OtherPlayer.Character:FindFirstChild("Body Conditioning")) or Values["DuraEnabled"] == false
-				
+
 				local StartingHealth 	= OtherPlayer.Character.Humanoid.Health
 				if Values["DuraEnabled"] == true then
 					Punch()
@@ -446,13 +448,13 @@ local function RunDura()
 					end
 				until ((OtherPlayer.Character.Humanoid.Health - StartingHealth) <= StartingHealth and OtherPlayer.Character:FindFirstChild("Body Conditioning")) or (not OtherPlayer.Character:FindFirstChild("Body Conditioning")) or Values["DuraEnabled"] == false
 			end
-			
+
 			Player.Character.Humanoid:UnequipTools()
 
 			Eat()
-			
+
 			DuraBoolValue = not DuraBoolValue
-			
+
 			if DuraBoolValue == true then
 				if Player.Character.Humanoid.Health < Player.Character.Humanoid.MaxHealth and Values["DuraEnabled"] == true then
 					repeat task.wait() until Player.Character.Humanoid.Health >= Player.Character.Humanoid.MaxHealth or Values["DuraEnabled"] == false
@@ -462,7 +464,7 @@ local function RunDura()
 					repeat task.wait() until OtherPlayer.Character.Humanoid.Health >= OtherPlayer.Character.Humanoid.MaxHealth or Values["DuraEnabled"] == false
 				end
 			end
-			
+
 			if Values["DuraEnabled"] == true then
 				local S, F = pcall(function()
 					RunDura()
@@ -554,7 +556,7 @@ AutofarmChan:Toggle("Dura Training", false, function(Value)
 				end
 			end
 		end
-		
+
 		local S, F = pcall(function()
 			RunDura()
 		end)
