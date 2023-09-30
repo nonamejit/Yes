@@ -409,7 +409,7 @@ local function RunDura()
 				if Player.Character:FindFirstChild("Body Conditioning") and Player.Character["Body Conditioning"]:GetAttribute("Count") == Starting  then
 					task.wait(1)
 					repeat task.wait(0.6)
-						if Values["DuraEnabled"] == true and Player.Character["Body Conditioning"]:GetAttribute("Count") == Starting then
+						if Values["DuraEnabled"] == true and Player.Character:FindFirstChild("Body Conditioning") and Player.Character["Body Conditioning"]:GetAttribute("Count") == Starting then
 							Player.Character:FindFirstChild("Body Conditioning"):Activate()
 						end
 					until Player.Character["Body Conditioning"]:GetAttribute("Count") ~= Starting or Values["DuraEnabled"] == false
