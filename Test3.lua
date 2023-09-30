@@ -404,16 +404,17 @@ local function RunDura()
 				until Player.Character.Humanoid.WalkSpeed <= 1 or Values["DuraEnabled"] == false
 				
 				local Starting = Player.Character["Body Conditioning"]:GetAttribute("Count")
-				repeat task.wait() until not (Player.Character:FindFirstChild("Body Conditioning") or OtherPlayer.Character:FindFirstChild("Combat")) or Values["DuraEnabled"] == false
+				repeat task.wait() until not Player.Character:FindFirstChild("Body Conditioning") or not OtherPlayer.Character:FindFirstChild("Combat") or Values["DuraEnabled"] == false
 				
 				if Player.Character:FindFirstChild("Body Conditioning") and Player.Character["Body Conditioning"]:GetAttribute("Count") == Starting  then
 					Player.Character:FindFirstChild("Body Conditioning"):Activate()
 				else
 					Player.Character.Humanoid.WalkSpeed = 0
 				end
-
+				
+				task.wait(1)
+				
 				if Player.Character.Humanoid.WalkSpeed == 0 and Values["DuraEnabled"] == true then
-					task.wait(1)
 					Player.Character.Humanoid.WalkSpeed = 16
 				end
 			elseif DuraBoolValue == false then
