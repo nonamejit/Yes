@@ -452,10 +452,10 @@ local function RunDura()
 			end
 
 			Player.Character.Humanoid:UnequipTools()
+			
+			DuraBoolValue = not DuraBoolValue
 
 			Eat()
-
-			DuraBoolValue = not DuraBoolValue
 
 			if DuraBoolValue == false then
 				if OtherPlayer.Character.Humanoid.Health < OtherPlayer.Character.Humanoid.MaxHealth and Values["DuraEnabled"] == true then
