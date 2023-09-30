@@ -436,6 +436,7 @@ local function RunDura()
 
 				local StartingHealth 	= OtherPlayer.Character.Humanoid.Health
 				if Values["DuraEnabled"] == true then
+					task.wait(1)
 					Punch()
 				end
 				repeat task.wait() until OtherPlayer.Character.Humanoid.Health ~= StartingHealth
@@ -459,8 +460,7 @@ local function RunDura()
 			if DuraBoolValue == false then
 				if OtherPlayer.Character.Humanoid.Health < OtherPlayer.Character.Humanoid.MaxHealth and Values["DuraEnabled"] == true then
 					repeat task.wait() until OtherPlayer.Character.Humanoid.Health >= OtherPlayer.Character.Humanoid.MaxHealth or Values["DuraEnabled"] == false
-
-				end
+				end	
 			end
 
 			if Values["DuraEnabled"] == true then
