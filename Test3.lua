@@ -405,18 +405,19 @@ local function RunDura()
 				
 				local Starting = Player.Character["Body Conditioning"]:GetAttribute("Count")
 				repeat task.wait() until not Player.Character:FindFirstChild("Body Conditioning") or not OtherPlayer.Character:FindFirstChild("Combat") or Values["DuraEnabled"] == false
-				
+
 				if Player.Character:FindFirstChild("Body Conditioning") and Player.Character["Body Conditioning"]:GetAttribute("Count") == Starting  then
 					task.wait(1)
-					repeat task.wait(0.6)
-						if Values["DuraEnabled"] == true and Player.Character:FindFirstChild("Body Conditioning") and Player.Character["Body Conditioning"]:GetAttribute("Count") == Starting then
-							Player.Character:FindFirstChild("Body Conditioning"):Activate()
-						end
-					until Player.Character["Body Conditioning"]:GetAttribute("Count") ~= Starting or Values["DuraEnabled"] == false
+					if Player.Character:FindFirstChild("Body Conditioning") and Player.Character["Body Conditioning"]:GetAttribute("Count") == Starting  then
+						repeat task.wait(0.6)
+							if Values["DuraEnabled"] == true and Player.Character:FindFirstChild("Body Conditioning") and Player.Character["Body Conditioning"]:GetAttribute("Count") == Starting then
+								Player.Character:FindFirstChild("Body Conditioning"):Activate()
+							end
+						until Player.Character:FindFirstChild("Body Conditioning") and Player.Character["Body Conditioning"]:GetAttribute("Count") ~= Starting or Values["DuraEnabled"] == false
+					end
 				elseif Values["DuraEnabled"] == true then
 					Player.Character.Humanoid.WalkSpeed = 0
 				end
-				
 				task.wait(1)
 				
 				if Player.Character.Humanoid.WalkSpeed == 0 and Values["DuraEnabled"] == true then
