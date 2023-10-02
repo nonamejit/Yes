@@ -260,12 +260,12 @@ if PlayerGui.TreadmillGain.Frame2.Keys:FindFirstChildOfClass("Frame") then
 	PlayerGui.TreadmillGain.Frame2.Keys:FindFirstChildOfClass("Frame"):Destroy()
 end
 
+local Hold = false
 local function RunThreadmil()
 	local Character			= Player.Character
 	local Humanoid			= Character.Humanoid
 
 	if Values["ThreadmilEnabled"] == true then
-
 		if PlayerGui.TreadmillGain.Frame.Visible == false and PlayerGui.TreadmillGain.Frame2.Visible == false then
 			local closestThreadmil = GetClosestTreadmil(15)
 			if closestThreadmil ~= nil then
@@ -282,6 +282,11 @@ local function RunThreadmil()
 
 			repeat task.wait() until PlayerGui.TreadmillGain.Frame.Visible == true or Values["ThreadmilEnabled"] == false
 			firesignal(PlayerGui.TreadmillGain.Frame[Values["ThreadmilType"]].MouseButton1Up)
+		end
+		
+		if Hold == true then
+			repeat task.wait() until PlayerGui.Main.HUD.Stamina.Clipping.Size.X.Scale >= 1 or Values["ThreadmilEnabled"] == false
+			Hold = false
 		end
 
 		task.wait(0.5)
@@ -313,7 +318,7 @@ local function RunThreadmil()
 			Connection:Disconnect()
 
 			if HoldOffConnection == true then
-				repeat task.wait() until PlayerGui.Main.HUD.Stamina.Clipping.Size.X.Scale >= 1 or Values["ThreadmilEnabled"] == false
+				Hold = true
 			end
 
 			Eat()
@@ -393,38 +398,34 @@ local function RunDura()
 						Player.Character.Humanoid:EquipTool(Player.Backpack["Body Conditioning"])
 					end
 				until Player.Character:FindFirstChild("Body Conditioning") or Values["DuraEnabled"] == false
-
+				
+				local Starting = Player.Character:FindFirstChild("Body Conditioning") and Player.Character["Body Conditioning"]:GetAttribute("Count")
 				repeat task.wait() until (Player.Character.HumanoidRootPart.Position - OtherPlayer.Character.HumanoidRootPart.Position).Magnitude < 10 or Values["DuraEnabled"] == false
 				repeat task.wait() until (OtherPlayer.Character:FindFirstChildOfClass("Tool") and OtherPlayer.Character:FindFirstChildOfClass("Tool").Name == "Combat") or Values["DuraEnabled"] == false
 
-				repeat task.wait(0.6)
+				repeat task.wait(1)
 					if Player.Character.Humanoid.WalkSpeed > 1 and Player.Character:FindFirstChild("Body Conditioning") and Values["DuraEnabled"] == true then
 						Player.Character:FindFirstChild("Body Conditioning"):Activate()
 					end
 				until Player.Character.Humanoid.WalkSpeed <= 1 or Values["DuraEnabled"] == false
-				
-				local C = Player.Character.HumanoidRootPart.ChildAdded:Connect(function(C)
-					if C.Name == "Removeable" then
-						C:Destroy()
-					end
-				end)
-				
-				local Starting = Player.Character["Body Conditioning"]:GetAttribute("Count")
+
 				repeat task.wait() until not Player.Character:FindFirstChild("Body Conditioning") or not OtherPlayer.Character:FindFirstChild("Combat") or Values["DuraEnabled"] == false
 
 				if Player.Character:FindFirstChild("Body Conditioning") and Player.Character["Body Conditioning"]:GetAttribute("Count") == Starting  then
 					task.wait(1)
 					if Player.Character:FindFirstChild("Body Conditioning") and Player.Character["Body Conditioning"]:GetAttribute("Count") == Starting  then
-						repeat task.wait(0.6)
+						repeat task.wait(1)
 							if Values["DuraEnabled"] == true and Player.Character:FindFirstChild("Body Conditioning") and Player.Character["Body Conditioning"]:GetAttribute("Count") == Starting then
 								Player.Character:FindFirstChild("Body Conditioning"):Activate()
 							end
 						until (Player.Character:FindFirstChild("Body Conditioning") and Player.Character["Body Conditioning"]:GetAttribute("Count") ~= Starting) or not Player.Character:FindFirstChild("Body Conditioning") or Values["DuraEnabled"] == false
 					end
+				else
+					Player.Character.HumanoidRootPart.Anchored = true
 				end
 				
-				C:Disconnect()
-				C = nil
+				task.wait(0.5)
+				Player.Character.HumanoidRootPart.Anchored = false
 			elseif DuraBoolValue == false then
 				repeat task.wait() until ((Player.Character.HumanoidRootPart.Position - OtherPlayer.Character.HumanoidRootPart.Position).Magnitude < 10 and OtherPlayer.Character:FindFirstChild("Body Conditioning")) or Values["DuraEnabled"] == false
 
