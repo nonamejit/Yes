@@ -256,14 +256,18 @@ local function RunPunchingBags()
 	end
 end
 
-if PlayerGui.TreadmillGain.Frame2.Keys:FindFirstChildOfClass("Frame") then
-	PlayerGui.TreadmillGain.Frame2.Keys:FindFirstChildOfClass("Frame"):Destroy()
+if PlayerGui.TreadmillGain.Frame2.Keys:FindFirstChildOfClass("Frame") and PlayerGui.TreadmillGain.Frame2.Keys:FindFirstChildOfClass("Frame").Name == "Line" then
+	PlayerGui.TreadmillGain.Frame2.Keys.Line:Destroy()
 end
 
 local Hold = false
 local function RunThreadmil()
 	local Character			= Player.Character
 	local Humanoid			= Character.Humanoid
+
+	if PlayerGui.TreadmillGain.Frame2.Keys:FindFirstChildOfClass("Frame") and PlayerGui.TreadmillGain.Frame2.Keys:FindFirstChildOfClass("Frame").Name == "Line" then
+		PlayerGui.TreadmillGain.Frame2.Keys.Line:Destroy()
+	end
 
 	if Values["ThreadmilEnabled"] == true then
 		if PlayerGui.TreadmillGain.Frame.Visible == false and PlayerGui.TreadmillGain.Frame2.Visible == false then
