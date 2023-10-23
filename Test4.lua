@@ -892,7 +892,7 @@ local function getObjGen()
 			Gui.Icon_2.BackgroundTransparency = 1.000
 			Gui.Icon_2.Size = UDim2.new(1, 0, 1, 0)
 			Gui.Icon_2.ZIndex = 111
-			Gui.Icon_2.Image = "rbxassetid://7072706663"
+			Gui.Icon_2.Image = "rbxassetid://14188254877"
 			Gui.Icon_2.ImageColor3 = Color3.fromRGB(100, 100, 100)
 			Gui.Icon_2.ScaleType = Enum.ScaleType.Fit
 
