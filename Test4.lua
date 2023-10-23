@@ -3281,7 +3281,8 @@ function UILibrary.new(gameName, userId, rank)
 			currentSelection = nil,
 			currentCategorySelection = nil,
 			currentTab = nil,
-			MainUI = window
+			MainUI = window,
+			ScreenGui = GUI
 		},
 		UILibrary.Window
 	)
